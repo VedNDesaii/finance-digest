@@ -302,7 +302,7 @@ export default function Home() {
     </div>
   )
 
-  const headerH = (!isPortfolio && articles.length > 0) ? (isMobile ? 120 : 108) : (isMobile ? 72 : 72)
+ const headerH = (!isPortfolio && articles.length > 0) ? (isMobile ? 148 : 108) : (isMobile ? 90 : 72)
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh', fontFamily: 'var(--font-ui)' }}>
@@ -440,48 +440,92 @@ export default function Home() {
         transition: isMobile ? 'none' : 'left 0.28s cubic-bezier(0.4,0,0.2,1)',
       }}>
         <div style={{ height: '3px', background: 'linear-gradient(90deg, var(--accent), #F0A84A, var(--accent))' }} />
-        <div style={{
-          padding: isMobile ? '10px 16px' : '12px 24px',
-          display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between', gap: '10px',
+        {/* ── Mobile header: stacked 2 rows ── */}
+{isMobile ? (
+  <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+
+    {/* Row 1: hamburger + title + theme toggle */}
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <button onClick={() => setSidebarOpen(o => !o)} style={{
+          background: 'none', border: 'none',
+          color: dark ? '#6B6055' : '#9A8E7E',
+          fontSize: '20px', cursor: 'pointer',
+          padding: '4px', lineHeight: 1, flexShrink: 0,
+        }}>☰</button>
+        <h1 style={{
+          fontSize: '18px', fontWeight: '700',
+          color: dark ? '#F0EBE3' : '#1A1410',
+          margin: '0', letterSpacing: '-0.03em',
+          fontFamily: 'var(--font-display)', lineHeight: 1.1,
+          whiteSpace: 'nowrap',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-            <button onClick={() => setSidebarOpen(o => !o)} style={{
-              background: 'none', border: 'none',
-              color: dark ? '#6B6055' : '#9A8E7E',
-              fontSize: '20px', cursor: 'pointer',
-              padding: '4px', lineHeight: 1, flexShrink: 0,
-            }}>☰</button>
-            <div style={{ minWidth: 0 }}>
-              <h1 style={{
-                fontSize: isMobile ? '18px' : '22px', fontWeight: '700',
-                color: dark ? '#F0EBE3' : '#1A1410',
-                margin: '0', letterSpacing: '-0.03em',
-                fontFamily: 'var(--font-display)', lineHeight: 1.1,
-                whiteSpace: 'nowrap',
-              }}>
-                Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
-              </h1>
-              {!isMobile && (
-                <p style={{
-                  fontSize: '10px', color: dark ? '#4A4438' : '#B8AFA3',
-                  margin: '2px 0 0', fontFamily: 'var(--font-ui)',
-                  letterSpacing: '0.07em', textTransform: 'uppercase',
-                }}>
-                  {today}
-                  {activeSectionLabel && (
-                    <span style={{ color: 'var(--accent)', marginLeft: '6px' }}>· {activeSectionLabel}</span>
-                  )}
-                </p>
-              )}
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-            <IndexChip label="S" data={indices.sensex} dark={dark} mobile={isMobile} />
-            <IndexChip label="N" data={indices.nifty} dark={dark} mobile={isMobile} />
-            <ThemeToggle dark={dark} onToggle={toggleTheme} />
-          </div>
-        </div>
+          Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
+        </h1>
+      </div>
+      <ThemeToggle dark={dark} onToggle={toggleTheme} />
+    </div>
+
+    {/* Row 2: index chips + active section */}
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <IndexChip label="S" data={indices.sensex} dark={dark} mobile={true} />
+        <IndexChip label="N" data={indices.nifty} dark={dark} mobile={true} />
+      </div>
+      {activeSectionLabel && (
+        <span style={{
+          fontSize: '10px', fontFamily: 'var(--font-ui)',
+          fontWeight: '600', letterSpacing: '0.07em',
+          color: 'var(--accent)', textTransform: 'uppercase',
+        }}>
+          {activeSectionLabel}
+        </span>
+      )}
+    </div>
+  </div>
+) : (
+  /* ── Desktop header: single row ── */
+  <div style={{
+    padding: '12px 24px',
+    display: 'flex', alignItems: 'center',
+    justifyContent: 'space-between', gap: '10px',
+  }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+      <button onClick={() => setSidebarOpen(o => !o)} style={{
+        background: 'none', border: 'none',
+        color: dark ? '#6B6055' : '#9A8E7E',
+        fontSize: '20px', cursor: 'pointer',
+        padding: '4px', lineHeight: 1, flexShrink: 0,
+      }}>☰</button>
+      <div style={{ minWidth: 0 }}>
+        <h1 style={{
+          fontSize: '22px', fontWeight: '700',
+          color: dark ? '#F0EBE3' : '#1A1410',
+          margin: '0', letterSpacing: '-0.03em',
+          fontFamily: 'var(--font-display)', lineHeight: 1.1,
+          whiteSpace: 'nowrap',
+        }}>
+          Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
+        </h1>
+        <p style={{
+          fontSize: '10px', color: dark ? '#4A4438' : '#B8AFA3',
+          margin: '2px 0 0', fontFamily: 'var(--font-ui)',
+          letterSpacing: '0.07em', textTransform: 'uppercase',
+        }}>
+          {today}
+          {activeSectionLabel && (
+            <span style={{ color: 'var(--accent)', marginLeft: '6px' }}>· {activeSectionLabel}</span>
+          )}
+        </p>
+      </div>
+    </div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+      <IndexChip label="S" data={indices.sensex} dark={dark} mobile={false} />
+      <IndexChip label="N" data={indices.nifty} dark={dark} mobile={false} />
+      <ThemeToggle dark={dark} onToggle={toggleTheme} />
+    </div>
+  </div>
+)}
 
         {!isPortfolio && articles.length > 0 && (
           <div style={{
