@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import ArticleCard from '../components/ArticleCard'
 import NewsReader from '../components/NewsReader'
 import MyPortfolio from '../components/MyPortfolio'
+import MarketSummaryBanner from '../components/MarketSummaryBanner'
 
 const SIDEBAR_GROUPS = [
   { type: 'item', id: 'headlines', label: 'Major Headlines', icon: '🔥' },
@@ -566,7 +567,13 @@ export default function Home() {
                 marginBottom: '16px',
               }}>{activeSectionLabel}</p>
             )}
-
+            {(activeSection === 'indian-markets') && (
+             <MarketSummaryBanner market="indian" dark={dark} isMobile={isMobile} />
+             )}
+ 
+             {(activeSection === 'us-markets') && (
+            <MarketSummaryBanner market="us" dark={dark} isMobile={isMobile} />
+             )}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
               <div style={{ height: '1px', flex: 1, background: dark ? '#2C2822' : '#EDE8E0' }} />
               <span style={{

@@ -1,0 +1,101 @@
+{
+  "today": {
+    "date": "2026-05-26",
+    "readyAt": "16:00",
+    "indian": {
+      "marketTime": "Market closed at 3:30 PM IST",
+      "updatedAt": "Updated at 4:30 PM IST",
+      "verdictSentiment": "negative",
+      "verdict": "Markets fell for a third straight session — FII selling continued and IT stocks dragged Nifty below 24,700, though banking held up better than expected.",
+      "watchOut": "RBI credit policy minutes release tomorrow + US PCE inflation data could set the tone for the rest of the week.",
+      "indices": [
+        { "label": "Sensex",    "price": "81,234", "change": "-312", "pct": "-0.38" },
+        { "label": "Nifty 50",  "price": "24,678", "change": "-94",  "pct": "-0.38" },
+        { "label": "Bank Nifty","price": "52,110", "change": "+128", "pct": "+0.25" }
+      ],
+      "factors": [
+        { "icon": "🌍", "label": "Global cues",  "value": "Weak",         "sub": "US futures -0.4%",   "sentiment": "negative" },
+        { "icon": "💵", "label": "FII activity",  "value": "Sold ₹2,100 Cr","sub": "3rd day of selling","sentiment": "negative" },
+        { "icon": "🛢️", "label": "Crude oil",    "value": "$84.2 / bbl",  "sub": "Up 1.2% today",     "sentiment": "negative" }
+      ],
+      "sectors": [
+        { "name": "Banking", "pct": "0.3"  },
+        { "name": "IT",      "pct": "-1.1" },
+        { "name": "Auto",    "pct": "-0.8" },
+        { "name": "FMCG",    "pct": "0.2"  }
+      ]
+    },
+    "us": {
+      "marketTime": "NYSE/NASDAQ close at 1:30 AM IST",
+      "updatedAt": "Updated at 2:00 AM IST",
+      "verdictSentiment": "positive",
+      "verdict": "Wall Street ended mixed — Nvidia's blowout earnings lifted tech, but rate-cut uncertainty kept broader gains in check as investors waited on Fed signals.",
+      "watchOut": "Fed chair Powell speaks tonight at 7:30 PM IST — any hint about rate cuts being delayed could move markets sharply.",
+      "indices": [
+        { "label": "S&P 500",   "price": "5,304",  "change": "+38",  "pct": "+0.72" },
+        { "label": "Nasdaq",    "price": "16,780", "change": "+142", "pct": "+0.85" },
+        { "label": "Dow Jones", "price": "39,112", "change": "+210", "pct": "+0.54" }
+      ],
+      "factors": [
+        { "icon": "🤖", "label": "Big mover",  "value": "Nvidia +9%",   "sub": "Record earnings",         "sentiment": "positive" },
+        { "icon": "📉", "label": "Inflation",   "value": "CPI 3.1%",     "sub": "Better than expected",    "sentiment": "positive" },
+        { "icon": "🏦", "label": "10yr yield",  "value": "4.42%",        "sub": "Fell 6 bps",              "sentiment": "neutral"  }
+      ],
+      "sectors": [
+        { "name": "Tech",       "pct": "1.4"  },
+        { "name": "Financials", "pct": "0.7"  },
+        { "name": "Healthcare", "pct": "0.3"  },
+        { "name": "Energy",     "pct": "-0.5" }
+      ]
+    }
+  },
+  "yesterday": {
+    "date": "2026-05-25",
+    "indian": {
+      "marketTime": "Market closed at 3:30 PM IST",
+      "updatedAt": "Updated at 4:30 PM IST",
+      "verdictSentiment": "positive",
+      "verdict": "Sensex gained 227 points driven by strong buying in Reliance and HDFC Bank. RBI's decision to hold rates steady boosted sentiment across financial stocks.",
+      "watchOut": "FII flows and global crude movement will be key watch points heading into the week.",
+      "indices": [
+        { "label": "Sensex",    "price": "81,546", "change": "+227", "pct": "+0.28" },
+        { "label": "Nifty 50",  "price": "24,772", "change": "+64",  "pct": "+0.26" },
+        { "label": "Bank Nifty","price": "51,982", "change": "+310", "pct": "+0.60" }
+      ],
+      "factors": [
+        { "icon": "🏦", "label": "RBI policy",   "value": "Rates held",       "sub": "Positive for markets", "sentiment": "positive" },
+        { "icon": "💵", "label": "FII activity",  "value": "Bought ₹1,800 Cr", "sub": "First buy in 4 days",  "sentiment": "positive" },
+        { "icon": "🛢️", "label": "Crude oil",    "value": "$82.0 / bbl",      "sub": "Down 1.5%",            "sentiment": "positive" }
+      ],
+      "sectors": [
+        { "name": "Banking", "pct": "0.6"  },
+        { "name": "IT",      "pct": "0.4"  },
+        { "name": "Auto",    "pct": "0.5"  },
+        { "name": "Metals",  "pct": "-0.3" }
+      ]
+    },
+    "us": {
+      "marketTime": "NYSE/NASDAQ close at 1:30 AM IST",
+      "updatedAt": "Updated at 2:00 AM IST",
+      "verdictSentiment": "positive",
+      "verdict": "S&P 500 rose for the second day as strong jobs data eased recession fears, and energy stocks rallied on higher crude prices.",
+      "watchOut": "Consumer confidence data release and Nvidia earnings tonight are the two big events to watch.",
+      "indices": [
+        { "label": "S&P 500",   "price": "5,266",  "change": "+22",  "pct": "+0.42" },
+        { "label": "Nasdaq",    "price": "16,638", "change": "+88",  "pct": "+0.53" },
+        { "label": "Dow Jones", "price": "38,902", "change": "+145", "pct": "+0.37" }
+      ],
+      "factors": [
+        { "icon": "💼", "label": "Jobs data",    "value": "Strong",       "sub": "Claims fell to 215k",  "sentiment": "positive" },
+        { "icon": "⚡", "label": "Energy",       "value": "Sector +1.2%", "sub": "Crude up 2%",          "sentiment": "positive" },
+        { "icon": "🏦", "label": "10yr yield",   "value": "4.48%",        "sub": "Rose 4 bps",           "sentiment": "neutral"  }
+      ],
+      "sectors": [
+        { "name": "Energy",     "pct": "1.2"  },
+        { "name": "Financials", "pct": "0.5"  },
+        { "name": "Tech",       "pct": "0.4"  },
+        { "name": "Utilities",  "pct": "-0.2" }
+      ]
+    }
+  }
+}
