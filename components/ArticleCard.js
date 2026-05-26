@@ -21,7 +21,14 @@ export default function ArticleCard({ article, dark }) {
   const safeQuickRead = quickRead.length < 60 ? raw : quickRead
   const safeReadMore = quickRead.length < 60 ? '' : readMore
   const firstSentence = safeQuickRead.split(/(?<=[.!?])\s+/)[0]?.trim() || safeQuickRead
-  const displayQuickRead = firstSentence.length < 20 ? 'Summary unavailable.' : firstSentence
+  const displayQuickRead =
+  firstSentence &&
+  firstSentence !== 'undefined' &&
+  firstSentence.length > 20
+    ? firstSentence
+    : article.investor_take ||
+      article.title ||
+      'Full summary currently processing.'
   const source = article.source?.split('|').pop()?.trim() || article.source
 
   /* ─── MOBILE — Option A: Full image top, immersive ─── */
@@ -39,6 +46,8 @@ export default function ArticleCard({ article, dark }) {
         {article.image_url ? (
           <div style={{ position: 'relative', height: '180px', overflow: 'hidden' }}>
             <img
+  loading="lazy"
+  referrerPolicy="no-referrer"
               src={article.image_url}
               alt={article.title}
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -242,10 +251,15 @@ export default function ArticleCard({ article, dark }) {
       {article.image_url && (
         <div style={{ position: 'relative', overflow: 'hidden', height: '220px' }}>
           <img
+  loading="lazy"
+  referrerPolicy="no-referrer"
             src={article.image_url}
             alt={article.title}
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            onError={e => e.target.parentElement.style.display = 'none'}
+            onError={(e) => {
+  e.target.src =
+    'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1200&auto=format&fit=crop'
+}}
           />
           {/* Gradient overlay */}
           <div style={{
