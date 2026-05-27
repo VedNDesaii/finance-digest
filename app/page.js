@@ -19,7 +19,6 @@ const SIDEBAR_GROUPS = [
   },
   { type: 'item', id: 'macro-policy',    label: 'Macro & Policy',   icon: '📊' },
   { type: 'item', id: 'banking-finance', label: 'Banking & Finance', icon: '🏦' },
-  { type: 'item', id: 'crypto',          label: 'Crypto',            icon: '₿'  },
   { type: 'divider' },
   {
     type: 'group', id: 'sectors', label: 'Sectors', icon: '🏭',
@@ -47,7 +46,6 @@ const ALL_SECTIONS = [
   { id: 'global-economy',  label: 'Global Economy'    },
   { id: 'macro-policy',    label: 'Macro & Policy'    },
   { id: 'banking-finance', label: 'Banking & Finance' },
-  { id: 'crypto',          label: 'Crypto'             },
   { id: 'technology-it',   label: 'Technology & IT'   },
   { id: 'energy-oil',      label: 'Energy & Oil'      },
   { id: 'pharma-health',   label: 'Pharma & Health'   },
