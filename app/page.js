@@ -7,37 +7,58 @@ import MyPortfolio from '../components/MyPortfolio'
 import MarketSummaryBanner from '../components/MarketSummaryBanner'
 import { useAuth } from './hooks/useAuth'
 
-const SIDEBAR_GROUPS = [
-  { type: 'item', id: 'headlines', label: 'Major Headlines', icon: '🔥' },
-  { type: 'divider' },
-  {
-    type: 'group', id: 'markets', label: 'Markets', icon: '📈',
-    children: [
-      { id: 'indian-markets', label: 'Indian Markets', icon: '🇮🇳' },
-      { id: 'us-markets',     label: 'US Markets',     icon: '🇺🇸' },
-      { id: 'global-economy', label: 'Global Economy', icon: '🌍' },
-    ],
-  },
-  { type: 'item', id: 'macro-policy',    label: 'Macro & Policy',   icon: '📊' },
-  { type: 'item', id: 'banking-finance', label: 'Banking & Finance', icon: '🏦' },
-  { type: 'divider' },
-  {
-    type: 'group', id: 'sectors', label: 'Sectors', icon: '🏭',
-    children: [
-      { id: 'technology-it',  label: 'Technology & IT',  icon: '💻' },
-      { id: 'energy-oil',     label: 'Energy & Oil',     icon: '⚡' },
-      { id: 'pharma-health',  label: 'Pharma & Health',  icon: '💊' },
-      { id: 'auto-ev',        label: 'Auto & EV',        icon: '🚗' },
-      { id: 'metals-mining',  label: 'Metals & Mining',  icon: '⛏️' },
-      { id: 'renewables',     label: 'Renewables',       icon: '🌱' },
-      { id: 'real-estate',    label: 'Real Estate',      icon: '🏠' },
-      { id: 'infrastructure', label: 'Infrastructure',   icon: '🏗️' },
-      { id: 'fmcg-consumer',  label: 'FMCG & Consumer',  icon: '🛒' },
-      { id: 'telecom-media',  label: 'Telecom & Media',  icon: '📡' },
-    ],
-  },
-  { type: 'divider' },
-  { type: 'item', id: 'portfolio', label: 'My Portfolio', icon: '💼' },
+// ── Desktop flat navigation ──
+const DESKTOP_NAV = [
+  { type: 'label', text: 'GENERAL' },
+  { id: 'headlines',       label: 'Major Headlines',  icon: '📰' },
+  { type: 'label', text: 'MARKETS' },
+  { id: 'indian-markets',  label: 'Indian Markets',   icon: '🇮🇳' },
+  { id: 'us-markets',      label: 'US Markets',       icon: '🇺🇸' },
+  { id: 'global-economy',  label: 'Global Economy',   icon: '🌐' },
+  { type: 'label', text: 'POLICY' },
+  { id: 'macro-policy',    label: 'Macro & Policy',   icon: '🏛️' },
+  { id: 'banking-finance', label: 'Banking & Finance', icon: '🏦' },
+  { type: 'label', text: 'SECTORS' },
+  { id: 'technology-it',   label: 'Technology & IT',  icon: '💻' },
+  { id: 'energy-oil',      label: 'Energy & Oil',     icon: '⛽' },
+  { id: 'pharma-health',   label: 'Pharma & Health',  icon: '💊' },
+  { id: 'auto-ev',         label: 'Auto & EV',        icon: '🚗' },
+  { id: 'metals-mining',   label: 'Metals & Mining',  icon: '⚙️' },
+  { id: 'renewables',      label: 'Renewables',       icon: '☀️' },
+  { id: 'real-estate',     label: 'Real Estate',      icon: '🏠' },
+  { id: 'infrastructure',  label: 'Infrastructure',   icon: '🔧' },
+  { id: 'fmcg-consumer',   label: 'FMCG & Consumer',  icon: '🛒' },
+  { id: 'telecom-media',   label: 'Telecom & Media',  icon: '📡' },
+  { type: 'label', text: 'MORE' },
+  { id: 'portfolio',       label: 'My Portfolio',     icon: '💰' },
+]
+
+// ── Mobile bottom tabs ──
+const BOTTOM_TABS = [
+  { id: 'top',     icon: '📰', label: 'Top' },
+  { id: 'markets', icon: '📈', label: 'Markets' },
+  { id: 'sectors', icon: '🏭', label: 'Sectors' },
+  { id: 'finance', icon: '🏦', label: 'Finance' },
+  { id: 'more',    icon: '⋯',  label: 'More' },
+]
+
+const MARKETS_SECTIONS = [
+  { id: 'indian-markets', label: 'Indian Markets', icon: '🇮🇳' },
+  { id: 'us-markets',     label: 'US Markets',     icon: '🇺🇸' },
+  { id: 'global-economy', label: 'Global Economy', icon: '🌐' },
+]
+
+const SECTORS_SECTIONS = [
+  { id: 'technology-it',  label: 'Tech & IT',     icon: '💻' },
+  { id: 'energy-oil',     label: 'Energy',        icon: '⛽' },
+  { id: 'pharma-health',  label: 'Pharma',        icon: '💊' },
+  { id: 'auto-ev',        label: 'Auto & EV',     icon: '🚗' },
+  { id: 'metals-mining',  label: 'Metals',        icon: '⚙️' },
+  { id: 'renewables',     label: 'Renewables',    icon: '☀️' },
+  { id: 'real-estate',    label: 'Real Estate',   icon: '🏠' },
+  { id: 'infrastructure', label: 'Infra',         icon: '🔧' },
+  { id: 'fmcg-consumer',  label: 'FMCG',          icon: '🛒' },
+  { id: 'telecom-media',  label: 'Telecom',       icon: '📡' },
 ]
 
 const ALL_SECTIONS = [
@@ -65,23 +86,24 @@ const SECTOR_IDS = [
   'renewables','real-estate','infrastructure','fmcg-consumer','telecom-media',
 ]
 
-const BASIC_SECTIONS = [
-  'indian-markets','us-markets','global-economy','macro-policy','banking-finance',
-  ...SECTOR_IDS,
-]
+const SIDEBAR_W = 210
 
-const SIDEBAR_W = 224
+function getActiveMobileTab(section) {
+  if (section === 'headlines') return 'top'
+  if (['indian-markets','us-markets','global-economy'].includes(section)) return 'markets'
+  if (SECTOR_IDS.includes(section)) return 'sectors'
+  if (['banking-finance','macro-policy'].includes(section)) return 'finance'
+  if (section === 'portfolio') return 'more'
+  return 'top'
+}
 
-// ✅ Check if Indian market is open (9:15 AM - 3:30 PM IST, Mon-Fri)
 function isMarketOpen() {
-  const now = new Date()
-  const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }))
-  const day = ist.getDay()
-  const h   = ist.getHours()
-  const m   = ist.getMinutes()
-  const mins = h * 60 + m
+  const now  = new Date()
+  const ist  = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }))
+  const day  = ist.getDay()
+  const mins = ist.getHours() * 60 + ist.getMinutes()
   if (day === 0 || day === 6) return false
-  return mins >= 555 && mins <= 930 // 9:15 = 555, 15:30 = 930
+  return mins >= 555 && mins <= 930
 }
 
 function IndexChip({ label, data, dark, mobile }) {
@@ -90,41 +112,42 @@ function IndexChip({ label, data, dark, mobile }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: mobile ? '4px' : '6px',
-      background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+      background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
       borderRadius: '8px', padding: mobile ? '4px 8px' : '6px 12px',
-      border: `1px solid ${dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'}`,
+      border: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
     }}>
-      <span style={{
-        fontSize: mobile ? '9px' : '10px',
-        fontFamily: 'var(--font-ui)', fontWeight: '700',
-        letterSpacing: '0.04em', textTransform: 'uppercase',
-        color: dark ? '#6B6055' : '#9A8E7E',
-      }}>{label}</span>
-      <span style={{
-        fontSize: mobile ? '12px' : '13px', fontWeight: '600',
-        fontFamily: 'var(--font-ui)', color: dark ? '#F0EBE3' : '#1A1410',
-      }}>{data.price}</span>
-      <span style={{
-        fontSize: mobile ? '10px' : '11px', fontWeight: '600',
-        fontFamily: 'var(--font-ui)',
-        color: up ? '#4ADE80' : '#F87171',
-      }}>
+      <span style={{ fontSize: mobile ? '9px' : '10px', fontFamily: 'var(--font-ui)', fontWeight: '700',
+        letterSpacing: '0.04em', textTransform: 'uppercase', color: dark ? '#6B6055' : '#9A8E7E' }}>
+        {label}
+      </span>
+      <span style={{ fontSize: mobile ? '12px' : '13px', fontWeight: '700',
+        fontFamily: 'var(--font-ui)', color: dark ? '#F0EBE3' : '#1A1410' }}>
+        {data.price}
+      </span>
+      <span style={{ fontSize: mobile ? '10px' : '11px', fontWeight: '600',
+        fontFamily: 'var(--font-ui)', color: up ? '#4ADE80' : '#F87171' }}>
         {up ? '▲' : '▼'} {Math.abs(data.pct)}%
       </span>
     </div>
   )
 }
 
-function ThemeToggle({ dark, onToggle }) {
+// ✅ Theme toggle with text label
+function ThemeToggle({ dark, onToggle, mobile }) {
   return (
     <button onClick={onToggle} style={{
-      width: '34px', height: '34px', borderRadius: '50%', border: 'none',
+      display: 'flex', alignItems: 'center', gap: '5px',
+      padding: mobile ? '5px 8px' : '6px 10px',
+      borderRadius: '8px', border: 'none',
       background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)',
       color: dark ? '#F0EBE3' : '#1A1410',
-      cursor: 'pointer', fontSize: '15px', display: 'flex',
-      alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+      cursor: 'pointer', flexShrink: 0,
     }}>
-      {dark ? '☀️' : '🌙'}
+      <span style={{ fontSize: mobile ? '13px' : '14px' }}>{dark ? '☀️' : '🌙'}</span>
+      <span style={{ fontSize: '11px', fontWeight: '600', fontFamily: 'var(--font-ui)',
+        color: dark ? '#9A8E7E' : '#7A6B5A' }}>
+        {dark ? 'Light' : 'Dark'}
+      </span>
     </button>
   )
 }
@@ -152,11 +175,9 @@ function AccountBtn({ user, plan, dark, mobile }) {
       color: '#fff', fontSize: mobile ? '11px' : '12px',
       fontWeight: '700', textDecoration: 'none',
       fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap',
-    }}>
-      Sign In
-    </a>
+    }}>Sign In</a>
   )
-  const label = plan === 'pro' ? '⭐ Pro' : plan === 'basic' ? '✦ Basic' : '👤 Account'
+  const label = plan === 'pro' ? '⭐ Pro' : plan === 'basic' ? '✦ Basic' : '👤'
   return (
     <a href="/account" style={{
       display: 'flex', alignItems: 'center',
@@ -166,9 +187,7 @@ function AccountBtn({ user, plan, dark, mobile }) {
       color: 'var(--accent)', fontSize: mobile ? '11px' : '12px',
       fontWeight: '600', textDecoration: 'none',
       fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap',
-    }}>
-      {label}
-    </a>
+    }}>{label}</a>
   )
 }
 
@@ -177,21 +196,23 @@ export default function Home() {
   const [loading, setLoading]             = useState(true)
   const [activeSection, setActiveSection] = useState('headlines')
   const [sidebarOpen, setSidebarOpen]     = useState(false)
-  const [openGroups, setOpenGroups]       = useState({ markets: true, sectors: false })
   const [currentIndex, setCurrentIndex]   = useState(0)
   const [fetchError, setFetchError]       = useState(null)
   const [dark, setDark]                   = useState(false)
   const [isMobile, setIsMobile]           = useState(false)
   const [sectionCounts, setSectionCounts] = useState({})
+  const [mobileOverlay, setMobileOverlay] = useState(null)
   const [indices, setIndices]             = useState({
     sensex: { price: null, change: null, pct: null },
     nifty:  { price: null, change: null, pct: null },
   })
 
   const { user, plan } = useAuth()
-const isPro   = true
-const isBasic = true
-const isFree  = false
+  const isPro   = true
+  const isBasic = true
+  const isFree  = false
+
+  const activeMobileTab = getActiveMobileTab(activeSection)
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
@@ -200,7 +221,7 @@ const isFree  = false
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  useEffect(() => { setSidebarOpen(!isMobile) }, [isMobile])
+  useEffect(() => { if (!isMobile) setSidebarOpen(true) }, [isMobile])
 
   const sidebarWidth = sidebarOpen ? SIDEBAR_W : 0
   const isPortfolio  = activeSection === 'portfolio'
@@ -224,9 +245,7 @@ const isFree  = false
   useEffect(() => {
     async function fetchCounts() {
       try {
-        const { data } = await supabase
-          .from('processed_articles')
-          .select('category, is_headline')
+        const { data } = await supabase.from('processed_articles').select('category, is_headline')
         if (!data) return
         const counts = {}
         let headlineCount = 0
@@ -244,9 +263,8 @@ const isFree  = false
 
   useEffect(() => {
     if (!isPortfolio) fetchArticles(activeSection)
-  }, [activeSection, isFree, isBasic, isPro])
+  }, [activeSection])
 
-  // ✅ Live indices — polls every 5s during market hours, every 60s otherwise
   useEffect(() => {
     async function fetchIndices() {
       try {
@@ -255,13 +273,8 @@ const isFree  = false
         setIndices(data)
       } catch (e) { console.error('Index fetch failed', e) }
     }
-
     fetchIndices()
-
-    const interval = setInterval(() => {
-      fetchIndices()
-    }, isMarketOpen() ? 5000 : 60000)
-
+    const interval = setInterval(fetchIndices, isMarketOpen() ? 5000 : 60000)
     return () => clearInterval(interval)
   }, [])
 
@@ -270,21 +283,13 @@ const isFree  = false
     setCurrentIndex(0)
     setFetchError(null)
     try {
-      if (isFree && section !== 'headlines') {
-        setArticles([])
-        setLoading(false)
-        return
-      }
-
       let query = supabase
         .from('processed_articles')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(section === 'headlines' ? (isFree ? 5 : 20) : 12)
-
+        .limit(section === 'headlines' ? 20 : 12)
       if (section === 'headlines') query = query.eq('is_headline', true)
       else query = query.eq('category', section)
-
       const { data, error } = await query
       if (error) { setFetchError(error.message); setArticles([]) }
       else setArticles(data || [])
@@ -295,17 +300,20 @@ const isFree  = false
     }
   }
 
-  function toggleGroup(id) {
-    setOpenGroups(prev => ({ ...prev, [id]: !prev[id] }))
-  }
-
   function handleSectionClick(id) {
     setActiveSection(id)
-    if (['indian-markets','us-markets','global-economy'].includes(id))
-      setOpenGroups(prev => ({ ...prev, markets: true }))
-    if (SECTOR_IDS.includes(id))
-      setOpenGroups(prev => ({ ...prev, sectors: true }))
+    setMobileOverlay(null)
     if (isMobile) setSidebarOpen(false)
+  }
+
+  function handleMobileTabClick(tabId) {
+    if (tabId === 'top') {
+      handleSectionClick('headlines')
+    } else if (tabId === 'finance') {
+      handleSectionClick('banking-finance')
+    } else {
+      setMobileOverlay(mobileOverlay === tabId ? null : tabId)
+    }
   }
 
   const today = new Date().toLocaleDateString('en-IN', {
@@ -314,46 +322,10 @@ const isFree  = false
   })
   const activeSectionLabel = ALL_SECTIONS.find(s => s.id === activeSection)?.label || ''
 
-  const itemStyle = (id) => {
-    const active = activeSection === id
-    const locked = isFree && BASIC_SECTIONS.includes(id)
-    return {
-      display: 'flex', alignItems: 'center', gap: '9px',
-      width: '100%', textAlign: 'left',
-      padding: '10px 12px', marginBottom: '1px',
-      borderRadius: '9px', border: 'none',
-      background: active
-        ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.10)')
-        : 'transparent',
-      color: active
-        ? (dark ? '#E8973E' : '#B86E22')
-        : locked
-          ? (dark ? '#3A3028' : '#C4B9AE')
-          : (dark ? '#7A6B5A' : '#7A6B5A'),
-      fontSize: '14px',
-      fontWeight: active ? '600' : '400',
-      cursor: 'pointer',
-      transition: 'all 0.15s',
-      fontFamily: 'var(--font-ui)',
-      borderLeft: active
-        ? `2px solid ${dark ? '#E8973E' : '#D4873C'}`
-        : '2px solid transparent',
-      whiteSpace: 'nowrap',
-      letterSpacing: '0.01em',
-    }
-  }
-
-  const divStyle = {
-    height: '1px',
-    background: dark ? '#2C2822' : '#EDE8E0',
-    margin: '8px 0',
-  }
-
   const SkeletonCard = () => (
     <div style={{
       background: 'var(--bg-card)', borderRadius: '18px',
-      border: '1px solid var(--border-main)',
-      overflow: 'hidden', padding: '24px',
+      border: '1px solid var(--border-main)', overflow: 'hidden', padding: '24px',
     }}>
       <div className="skeleton" style={{ height: '180px', marginBottom: '20px', borderRadius: '12px' }} />
       <div className="skeleton" style={{ height: '18px', width: '85%', marginBottom: '10px' }} />
@@ -362,238 +334,129 @@ const isFree  = false
     </div>
   )
 
-  const LockedSection = ({ requiredPlan = 'basic' }) => (
-    <div style={{ textAlign: 'center', padding: '60px 20px', fontFamily: 'var(--font-ui)' }}>
-      <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
-      <p style={{
-        fontSize: '18px', fontWeight: '700',
-        color: dark ? '#F0EBE3' : '#1a1410', marginBottom: '8px',
-      }}>
-        {requiredPlan === 'pro' ? 'Pro Feature' : 'Upgrade to Read'}
-      </p>
-      <p style={{
-        fontSize: '14px', color: dark ? '#6B6055' : '#9a8e7e',
-        marginBottom: '28px', maxWidth: '300px',
-        margin: '0 auto 28px', lineHeight: '1.6',
-      }}>
-        {requiredPlan === 'pro'
-          ? 'Upgrade to Pro (₹199/month) to unlock this feature.'
-          : 'Upgrade to Basic (₹99/month) to access all news sections.'}
-      </p>
-      <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <a href="/pricing" style={{
-          display: 'inline-block', padding: '12px 28px',
-          background: '#C9A84C', color: '#fff',
-          borderRadius: '10px', fontSize: '14px',
-          fontWeight: '700', textDecoration: 'none',
-        }}>
-          View Plans →
-        </a>
-        {!user && (
-          <a href="/login" style={{
-            display: 'inline-block', padding: '12px 28px',
-            background: 'transparent',
-            border: `1px solid ${dark ? '#4A4438' : '#e8e0d5'}`,
-            color: dark ? '#9A8E7E' : '#5a4f3e',
-            borderRadius: '10px', fontSize: '14px',
-            fontWeight: '600', textDecoration: 'none',
-          }}>
-            Sign In
-          </a>
-        )}
-      </div>
-    </div>
-  )
-
   const headerH = (!isPortfolio && articles.length > 0 && isPro)
-    ? (isMobile ? 148 : 108)
-    : (isMobile ? 90 : 72)
+    ? (isMobile ? 130 : 108)
+    : (isMobile ? 82 : 72)
+
+  // ── Desktop sidebar item style ──
+  const sidebarItemStyle = (id) => {
+    const active = activeSection === id
+    return {
+      display: 'flex', alignItems: 'center', gap: '9px',
+      width: '100%', textAlign: 'left',
+      padding: '9px 12px', marginBottom: '1px',
+      borderRadius: '9px', border: 'none',
+      background: active
+        ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.10)')
+        : 'transparent',
+      color: active
+        ? (dark ? '#E8973E' : '#B86E22')
+        : (dark ? '#7A6B5A' : '#6B5E4E'),
+      fontSize: '13px',
+      fontWeight: active ? '600' : '400',
+      cursor: 'pointer',
+      transition: 'background 0.15s, color 0.15s',
+      fontFamily: 'var(--font-ui)',
+      borderLeft: active
+        ? `2px solid ${dark ? '#E8973E' : '#D4873C'}`
+        : '2px solid transparent',
+      whiteSpace: 'nowrap',
+    }
+  }
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh', fontFamily: 'var(--font-ui)' }}>
 
-      {isMobile && sidebarOpen && (
-        <div onClick={() => setSidebarOpen(false)} style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
-          zIndex: 29, backdropFilter: 'blur(2px)',
+      {/* ── Mobile overlay backdrop ── */}
+      {isMobile && mobileOverlay && (
+        <div onClick={() => setMobileOverlay(null)} style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+          zIndex: 38, backdropFilter: 'blur(2px)',
         }} />
       )}
 
-      {/* ── Sidebar ── */}
-      <aside style={{
-        position: 'fixed', top: 0, left: 0,
-        width: sidebarOpen ? `${SIDEBAR_W}px` : '0px',
-        height: '100vh',
-        background: 'var(--bg-sidebar)',
-        boxShadow: sidebarOpen ? (isMobile ? '4px 0 24px rgba(0,0,0,0.2)' : 'var(--shadow-sidebar)') : 'none',
-        overflow: 'hidden',
-        transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1)',
-        zIndex: 30,
-      }}>
-        <div className="sidebar-scroll" style={{
-          width: `${SIDEBAR_W}px`, height: '100%',
-          overflowY: 'auto', padding: '20px 12px 40px',
-          display: 'flex', flexDirection: 'column',
+      {/* ── Desktop sidebar backdrop ── */}
+      {!isMobile && sidebarOpen && (
+        <aside style={{
+          position: 'fixed', top: 0, left: 0,
+          width: `${SIDEBAR_W}px`, height: '100vh',
+          background: 'var(--bg-sidebar)',
+          boxShadow: 'var(--shadow-sidebar)',
+          zIndex: 30, overflowY: 'auto',
+          transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1)',
         }}>
-          {/* Logo */}
-          <div style={{ marginBottom: '20px', padding: '0 4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <div style={{
-                height: '3px', borderRadius: '2px', marginBottom: '10px',
-                background: 'linear-gradient(90deg, var(--accent), #F0A84A, var(--accent))',
-              }} />
-              <span style={{
-                fontSize: '16px', fontWeight: '700', letterSpacing: '-0.02em',
-                fontFamily: 'var(--font-display)', color: dark ? '#F0EBE3' : '#1A1410',
-              }}>
-                Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
-              </span>
+          <div style={{ padding: '20px 12px 40px', display: 'flex', flexDirection: 'column' }}>
+
+            {/* Logo */}
+            <div style={{ marginBottom: '16px', padding: '0 4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{
+                  height: '3px', borderRadius: '2px', marginBottom: '8px',
+                  background: 'linear-gradient(90deg, var(--accent), #F0A84A, var(--accent))',
+                }} />
+                <span style={{
+                  fontSize: '15px', fontWeight: '700', letterSpacing: '-0.02em',
+                  fontFamily: 'var(--font-display)', color: dark ? '#F0EBE3' : '#1A1410',
+                }}>
+                  Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
+                </span>
+              </div>
+              <button onClick={() => setSidebarOpen(false)} style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: dark ? '#4A4438' : '#C4B9AE', fontSize: '18px', padding: '4px',
+              }}>✕</button>
             </div>
-            <button onClick={() => setSidebarOpen(false)} style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: dark ? '#4A4438' : '#C4B9AE',
-              fontSize: '20px', lineHeight: 1, padding: '4px',
-            }}>✕</button>
-          </div>
 
-          {/* User plan badge */}
-          {user && (
-            <a href="/account" style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '10px 12px', marginBottom: '8px',
-              borderRadius: '9px', textDecoration: 'none',
-              background: dark ? 'rgba(201,168,76,0.1)' : 'rgba(201,168,76,0.08)',
-              border: `1px solid ${dark ? 'rgba(201,168,76,0.2)' : 'rgba(201,168,76,0.15)'}`,
-            }}>
-              <span style={{ fontSize: '12px', color: dark ? '#9A8E7E' : '#7A6B5A', fontFamily: 'var(--font-ui)' }}>
-                {user.email?.split('@')[0]}
-              </span>
-              <span style={{
-                fontSize: '10px', fontWeight: '700',
-                background: plan === 'pro' ? '#1a1410' : plan === 'basic' ? '#C9A84C' : '#e8e0d5',
-                color: plan === 'pro' ? '#C9A84C' : plan === 'basic' ? '#fff' : '#9a8e7e',
-                padding: '2px 8px', borderRadius: '99px',
-                fontFamily: 'var(--font-ui)',
+            {/* User badge */}
+            {user && (
+              <a href="/account" style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '9px 12px', marginBottom: '12px',
+                borderRadius: '9px', textDecoration: 'none',
+                background: dark ? 'rgba(201,168,76,0.1)' : 'rgba(201,168,76,0.08)',
+                border: `1px solid ${dark ? 'rgba(201,168,76,0.2)' : 'rgba(201,168,76,0.15)'}`,
               }}>
-                {plan === 'pro' ? '⭐ PRO' : plan === 'basic' ? '✦ BASIC' : 'FREE'}
-              </span>
-            </a>
-          )}
+                <span style={{ fontSize: '11px', color: dark ? '#9A8E7E' : '#7A6B5A' }}>
+                  {user.email?.split('@')[0]}
+                </span>
+                <span style={{
+                  fontSize: '9px', fontWeight: '700',
+                  background: plan === 'pro' ? '#1a1410' : plan === 'basic' ? '#C9A84C' : '#e8e0d5',
+                  color: plan === 'pro' ? '#C9A84C' : plan === 'basic' ? '#fff' : '#9a8e7e',
+                  padding: '2px 8px', borderRadius: '99px',
+                }}>
+                  {plan === 'pro' ? '⭐ PRO' : plan === 'basic' ? '✦ BASIC' : 'FREE'}
+                </span>
+              </a>
+            )}
 
-          {SIDEBAR_GROUPS.map((group, i) => {
-            if (group.type === 'divider') return <div key={i} style={divStyle} />
-
-            if (group.type === 'item') {
-              const count  = sectionCounts[group.id]
-              const active = activeSection === group.id
-              const locked = isFree && BASIC_SECTIONS.includes(group.id)
+            {/* ✅ Flat navigation with category labels */}
+            {DESKTOP_NAV.map((item, i) => {
+              if (item.type === 'label') return (
+                <p key={i} style={{
+                  fontSize: '9px', fontWeight: '700', letterSpacing: '0.1em',
+                  color: dark ? '#4A4438' : '#C4B9AE', margin: '12px 0 4px 12px',
+                  fontFamily: 'var(--font-ui)',
+                }}>{item.text}</p>
+              )
+              const count  = sectionCounts[item.id]
+              const active = activeSection === item.id
               return (
-                <button key={group.id} onClick={() => handleSectionClick(group.id)} style={itemStyle(group.id)}>
-                  <span style={{ fontSize: '15px', lineHeight: 1 }}>{group.icon}</span>
-                  <span style={{ flex: 1 }}>{group.label}</span>
-                  {locked && <span style={{ fontSize: '10px', color: dark ? '#3A3028' : '#C4B9AE' }}>🔒</span>}
-                  {!locked && count > 0 && <Badge count={count} active={active} dark={dark} />}
+                <button key={item.id} onClick={() => handleSectionClick(item.id)} style={sidebarItemStyle(item.id)}>
+                  <span style={{ fontSize: '14px', lineHeight: 1 }}>{item.icon}</span>
+                  <span style={{ flex: 1 }}>{item.label}</span>
+                  {count > 0 && <Badge count={count} active={active} dark={dark} />}
                 </button>
               )
-            }
-
-            const isOpen      = openGroups[group.id] ?? false
-            const childActive = group.children.some(c => c.id === activeSection)
-            const groupCount  = group.children.reduce((sum, c) => sum + (sectionCounts[c.id] || 0), 0)
-
-            return (
-              <div key={group.id} style={{ marginBottom: '1px' }}>
-                <button onClick={() => toggleGroup(group.id)} style={{
-                  display: 'flex', alignItems: 'center', gap: '9px',
-                  width: '100%', textAlign: 'left',
-                  padding: '10px 12px', marginBottom: '1px',
-                  borderRadius: '9px', border: 'none',
-                  background: childActive
-                    ? (dark ? 'rgba(232,151,62,0.07)' : 'rgba(212,135,60,0.06)')
-                    : 'transparent',
-                  color: childActive
-                    ? (dark ? '#C8A870' : '#A06B28')
-                    : (dark ? '#6B5E4E' : '#9A8070'),
-                  fontSize: '14px', fontWeight: '600',
-                  cursor: 'pointer', fontFamily: 'var(--font-ui)',
-                  borderLeft: childActive
-                    ? `2px solid ${dark ? 'rgba(232,151,62,0.35)' : 'rgba(212,135,60,0.3)'}`
-                    : '2px solid transparent',
-                  whiteSpace: 'nowrap', transition: 'all 0.15s',
-                }}>
-                  <span style={{ fontSize: '15px', lineHeight: 1 }}>{group.icon}</span>
-                  <span style={{ flex: 1 }}>{group.label}</span>
-                  {!isOpen && groupCount > 0 && !isFree && (
-                    <Badge count={groupCount} active={childActive} dark={dark} />
-                  )}
-                  {!isOpen && isFree && <span style={{ fontSize: '10px', color: dark ? '#3A3028' : '#C4B9AE' }}>🔒</span>}
-                  <span style={{
-                    fontSize: '9px', color: dark ? '#4A4438' : '#C4B9AE',
-                    transform: isOpen ? 'rotate(90deg)' : 'rotate(0)',
-                    transition: 'transform 0.2s', display: 'inline-block', marginLeft: '2px',
-                  }}>▶</span>
-                </button>
-                <div style={{
-                  overflow: 'hidden',
-                  maxHeight: isOpen ? `${group.children.length * 44}px` : '0px',
-                  transition: 'max-height 0.22s ease',
-                }}>
-                  {group.children.map(child => {
-                    const childCount    = sectionCounts[child.id]
-                    const childIsActive = activeSection === child.id
-                    const childLocked   = isFree
-                    return (
-                      <button key={child.id} onClick={() => handleSectionClick(child.id)}
-                        style={{ ...itemStyle(child.id), paddingLeft: '30px', fontSize: '13px' }}>
-                        <span style={{ fontSize: '13px', lineHeight: 1 }}>{child.icon}</span>
-                        <span style={{ flex: 1 }}>{child.label}</span>
-                        {childLocked
-                          ? <span style={{ fontSize: '10px', color: dark ? '#3A3028' : '#C4B9AE' }}>🔒</span>
-                          : childCount > 0 && <Badge count={childCount} active={childIsActive} dark={dark} />
-                        }
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            )
-          })}
-
-          {/* Upgrade prompt for free users */}
-          {isFree && (
-            <div style={{
-              marginTop: '16px', padding: '14px',
-              background: dark ? 'rgba(201,168,76,0.08)' : 'rgba(201,168,76,0.06)',
-              border: `1px solid ${dark ? 'rgba(201,168,76,0.2)' : 'rgba(201,168,76,0.15)'}`,
-              borderRadius: '10px',
-            }}>
-              <p style={{
-                fontSize: '12px', fontWeight: '700',
-                color: 'var(--accent)', margin: '0 0 4px',
-                fontFamily: 'var(--font-ui)',
-              }}>Unlock everything</p>
-              <p style={{
-                fontSize: '11px', color: dark ? '#6B6055' : '#9a8e7e',
-                margin: '0 0 10px', fontFamily: 'var(--font-ui)', lineHeight: '1.5',
-              }}>All sections from ₹99/mo</p>
-              <a href="/pricing" style={{
-                display: 'block', textAlign: 'center',
-                padding: '8px', background: '#C9A84C',
-                color: '#fff', borderRadius: '7px',
-                fontSize: '12px', fontWeight: '700',
-                textDecoration: 'none', fontFamily: 'var(--font-ui)',
-              }}>
-                View Plans →
-              </a>
-            </div>
-          )}
-        </div>
-      </aside>
+            })}
+          </div>
+        </aside>
+      )}
 
       {/* ── Header ── */}
       <header style={{
         position: 'fixed', top: 0,
-        left: isMobile ? 0 : `${sidebarWidth}px`, right: 0,
+        left: (!isMobile && sidebarOpen) ? `${SIDEBAR_W}px` : 0, right: 0,
         background: 'var(--bg-header)',
         boxShadow: 'var(--shadow-header)',
         zIndex: 20,
@@ -602,71 +465,54 @@ const isFree  = false
         <div style={{ height: '3px', background: 'linear-gradient(90deg, var(--accent), #F0A84A, var(--accent))' }} />
 
         {isMobile ? (
-          <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          // ── Mobile header ──
+          <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: '7px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <button onClick={() => setSidebarOpen(o => !o)} style={{
-                  background: 'none', border: 'none',
-                  color: dark ? '#6B6055' : '#9A8E7E',
-                  fontSize: '20px', cursor: 'pointer',
-                  padding: '4px', lineHeight: 1, flexShrink: 0,
-                }}>☰</button>
-                <h1 style={{
-                  fontSize: '18px', fontWeight: '700',
-                  color: dark ? '#F0EBE3' : '#1A1410',
-                  margin: '0', letterSpacing: '-0.03em',
-                  fontFamily: 'var(--font-display)', lineHeight: 1.1, whiteSpace: 'nowrap',
-                }}>
-                  Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
-                </h1>
-              </div>
+              <h1 style={{
+                fontSize: '18px', fontWeight: '700', color: dark ? '#F0EBE3' : '#1A1410',
+                margin: '0', letterSpacing: '-0.03em',
+                fontFamily: 'var(--font-display)', lineHeight: 1.1,
+              }}>
+                Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
+              </h1>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <AccountBtn user={user} plan={plan} dark={dark} mobile={true} />
-                <ThemeToggle dark={dark} onToggle={toggleTheme} />
+                <ThemeToggle dark={dark} onToggle={toggleTheme} mobile={true} />
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                {/* ✅ Full names */}
+              <div style={{ display: 'flex', gap: '6px' }}>
                 <IndexChip label="SENSEX" data={indices.sensex} dark={dark} mobile={true} />
                 <IndexChip label="NIFTY 50" data={indices.nifty} dark={dark} mobile={true} />
               </div>
-              {activeSectionLabel && (
-                <span style={{
-                  fontSize: '10px', fontFamily: 'var(--font-ui)',
-                  fontWeight: '600', letterSpacing: '0.07em',
-                  color: 'var(--accent)', textTransform: 'uppercase',
-                }}>
-                  {activeSectionLabel}
-                </span>
-              )}
+              <span style={{
+                fontSize: '10px', fontWeight: '600', letterSpacing: '0.06em',
+                color: 'var(--accent)', textTransform: 'uppercase', fontFamily: 'var(--font-ui)',
+              }}>{activeSectionLabel}</span>
             </div>
           </div>
         ) : (
+          // ── Desktop header ──
           <div style={{
             padding: '12px 24px', display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', gap: '10px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
               <button onClick={() => setSidebarOpen(o => !o)} style={{
-                background: 'none', border: 'none',
-                color: dark ? '#6B6055' : '#9A8E7E',
-                fontSize: '20px', cursor: 'pointer',
-                padding: '4px', lineHeight: 1, flexShrink: 0,
+                background: 'none', border: 'none', color: dark ? '#6B6055' : '#9A8E7E',
+                fontSize: '20px', cursor: 'pointer', padding: '4px', lineHeight: 1, flexShrink: 0,
               }}>☰</button>
-              <div style={{ minWidth: 0 }}>
+              <div>
                 <h1 style={{
-                  fontSize: '22px', fontWeight: '700',
-                  color: dark ? '#F0EBE3' : '#1A1410',
+                  fontSize: '22px', fontWeight: '700', color: dark ? '#F0EBE3' : '#1A1410',
                   margin: '0', letterSpacing: '-0.03em',
-                  fontFamily: 'var(--font-display)', lineHeight: 1.1, whiteSpace: 'nowrap',
+                  fontFamily: 'var(--font-display)', lineHeight: 1.1,
                 }}>
                   Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
                 </h1>
                 <p style={{
                   fontSize: '10px', color: dark ? '#4A4438' : '#B8AFA3',
-                  margin: '2px 0 0', fontFamily: 'var(--font-ui)',
-                  letterSpacing: '0.07em', textTransform: 'uppercase',
+                  margin: '2px 0 0', letterSpacing: '0.07em', textTransform: 'uppercase',
                 }}>
                   {today}
                   {activeSectionLabel && (
@@ -676,61 +522,252 @@ const isFree  = false
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-              {/* ✅ Full names */}
               <IndexChip label="SENSEX" data={indices.sensex} dark={dark} mobile={false} />
               <IndexChip label="NIFTY 50" data={indices.nifty} dark={dark} mobile={false} />
               <AccountBtn user={user} plan={plan} dark={dark} mobile={false} />
-              <ThemeToggle dark={dark} onToggle={toggleTheme} />
+              <ThemeToggle dark={dark} onToggle={toggleTheme} mobile={false} />
             </div>
           </div>
         )}
 
-        {/* Voice Agent — Pro only */}
+        {/* Voice Agent */}
         {!isPortfolio && articles.length > 0 && isPro && (
           <div style={{
             borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
             background: dark ? '#111009' : '#FAFAF7',
           }}>
             <div style={{ padding: isMobile ? '8px 16px' : '9px 24px' }}>
-              <NewsReader
-                newsItems={articles}
-                currentIndex={currentIndex}
-                onIndexChange={setCurrentIndex}
-                dark={dark}
-              />
+              <NewsReader newsItems={articles} currentIndex={currentIndex} onIndexChange={setCurrentIndex} dark={dark} />
             </div>
           </div>
         )}
       </header>
 
+      {/* ── Mobile bottom tab bar ── */}
+      {isMobile && (
+        <nav style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0,
+          height: '62px',
+          background: dark ? '#1A1410' : '#fff',
+          borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
+          display: 'flex', alignItems: 'center',
+          zIndex: 40,
+          boxShadow: dark ? 'none' : '0 -4px 20px rgba(0,0,0,0.06)',
+        }}>
+          {BOTTOM_TABS.map(tab => {
+            const isActive = activeMobileTab === tab.id ||
+              (mobileOverlay === tab.id)
+            return (
+              <button key={tab.id} onClick={() => handleMobileTabClick(tab.id)} style={{
+                flex: 1, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                gap: '3px', border: 'none',
+                background: 'none', cursor: 'pointer',
+                height: '100%', position: 'relative',
+                transition: 'opacity 0.15s',
+              }}>
+                {/* Active indicator dot */}
+                {isActive && (
+                  <div style={{
+                    position: 'absolute', top: '6px',
+                    width: '20px', height: '2px',
+                    background: '#C9A84C', borderRadius: '1px',
+                  }} />
+                )}
+                <span style={{
+                  fontSize: '22px', lineHeight: 1,
+                  filter: isActive ? 'none' : 'grayscale(0.3) opacity(0.7)',
+                  transition: 'transform 0.15s',
+                  transform: isActive ? 'scale(1.1)' : 'scale(1)',
+                }}>{tab.icon}</span>
+                <span style={{
+                  fontSize: '10px',
+                  fontWeight: isActive ? '700' : '400',
+                  color: isActive ? '#C9A84C' : (dark ? '#6B6055' : '#9A8E7E'),
+                  fontFamily: 'var(--font-ui)',
+                  transition: 'color 0.15s',
+                }}>{tab.label}</span>
+              </button>
+            )
+          })}
+        </nav>
+      )}
+
+      {/* ── Mobile Markets overlay ── */}
+      {isMobile && mobileOverlay === 'markets' && (
+        <div style={{
+          position: 'fixed', bottom: '62px', left: 0, right: 0,
+          background: dark ? '#1A1410' : '#fff',
+          borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
+          borderRadius: '20px 20px 0 0',
+          padding: '16px',
+          zIndex: 39,
+          boxShadow: '0 -8px 32px rgba(0,0,0,0.12)',
+          animation: 'slideUp 0.25s ease',
+        }}>
+          <div style={{ width: '36px', height: '3px', background: dark ? '#3A3028' : '#EDE8E0', borderRadius: '2px', margin: '0 auto 16px' }} />
+          <p style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em', color: dark ? '#4A4438' : '#C4B9AE', margin: '0 0 12px', fontFamily: 'var(--font-ui)' }}>MARKETS</p>
+          {MARKETS_SECTIONS.map(s => (
+            <button key={s.id} onClick={() => handleSectionClick(s.id)} style={{
+              display: 'flex', alignItems: 'center', gap: '12px',
+              width: '100%', padding: '13px 14px', marginBottom: '4px',
+              borderRadius: '12px', border: 'none', cursor: 'pointer',
+              background: activeSection === s.id
+                ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)')
+                : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
+              textAlign: 'left',
+            }}>
+              <span style={{ fontSize: '22px' }}>{s.icon}</span>
+              <span style={{ fontSize: '15px', fontWeight: activeSection === s.id ? '600' : '400',
+                color: activeSection === s.id ? 'var(--accent)' : (dark ? '#D4C8BC' : '#1A1410'),
+                fontFamily: 'var(--font-ui)' }}>
+                {s.label}
+              </span>
+              {sectionCounts[s.id] > 0 && (
+                <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: '600',
+                  color: 'var(--accent)', fontFamily: 'var(--font-ui)' }}>
+                  {sectionCounts[s.id]}
+                </span>
+              )}
+            </button>
+          ))}
+          {/* Also show Macro & Policy here */}
+          <p style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em', color: dark ? '#4A4438' : '#C4B9AE', margin: '12px 0 8px', fontFamily: 'var(--font-ui)' }}>POLICY</p>
+          {[
+            { id: 'macro-policy', label: 'Macro & Policy', icon: '🏛️' },
+            { id: 'banking-finance', label: 'Banking & Finance', icon: '🏦' },
+          ].map(s => (
+            <button key={s.id} onClick={() => handleSectionClick(s.id)} style={{
+              display: 'flex', alignItems: 'center', gap: '12px',
+              width: '100%', padding: '13px 14px', marginBottom: '4px',
+              borderRadius: '12px', border: 'none', cursor: 'pointer',
+              background: activeSection === s.id
+                ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)')
+                : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
+              textAlign: 'left',
+            }}>
+              <span style={{ fontSize: '22px' }}>{s.icon}</span>
+              <span style={{ fontSize: '15px', fontWeight: activeSection === s.id ? '600' : '400',
+                color: activeSection === s.id ? 'var(--accent)' : (dark ? '#D4C8BC' : '#1A1410'),
+                fontFamily: 'var(--font-ui)' }}>
+                {s.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Mobile Sectors overlay ── */}
+      {isMobile && mobileOverlay === 'sectors' && (
+        <div style={{
+          position: 'fixed', bottom: '62px', left: 0, right: 0,
+          background: dark ? '#1A1410' : '#fff',
+          borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
+          borderRadius: '20px 20px 0 0',
+          padding: '16px',
+          zIndex: 39,
+          boxShadow: '0 -8px 32px rgba(0,0,0,0.12)',
+          animation: 'slideUp 0.25s ease',
+        }}>
+          <div style={{ width: '36px', height: '3px', background: dark ? '#3A3028' : '#EDE8E0', borderRadius: '2px', margin: '0 auto 16px' }} />
+          <p style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em', color: dark ? '#4A4438' : '#C4B9AE', margin: '0 0 14px', fontFamily: 'var(--font-ui)' }}>SECTORS</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
+            {SECTORS_SECTIONS.map(s => (
+              <button key={s.id} onClick={() => handleSectionClick(s.id)} style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                gap: '5px', padding: '12px 4px',
+                borderRadius: '12px', border: 'none', cursor: 'pointer',
+                background: activeSection === s.id
+                  ? (dark ? 'rgba(232,151,62,0.15)' : 'rgba(212,135,60,0.10)')
+                  : (dark ? 'rgba(255,255,255,0.04)' : '#F7F4EF'),
+                transition: 'background 0.15s',
+              }}>
+                <span style={{ fontSize: '24px' }}>{s.icon}</span>
+                <span style={{
+                  fontSize: '9px', fontWeight: activeSection === s.id ? '700' : '500',
+                  color: activeSection === s.id ? 'var(--accent)' : (dark ? '#9A8E7E' : '#6B5E4E'),
+                  fontFamily: 'var(--font-ui)', textAlign: 'center', lineHeight: 1.2,
+                }}>{s.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Mobile More overlay ── */}
+      {isMobile && mobileOverlay === 'more' && (
+        <div style={{
+          position: 'fixed', bottom: '62px', left: 0, right: 0,
+          background: dark ? '#1A1410' : '#fff',
+          borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
+          borderRadius: '20px 20px 0 0',
+          padding: '16px',
+          zIndex: 39,
+          boxShadow: '0 -8px 32px rgba(0,0,0,0.12)',
+          animation: 'slideUp 0.25s ease',
+        }}>
+          <div style={{ width: '36px', height: '3px', background: dark ? '#3A3028' : '#EDE8E0', borderRadius: '2px', margin: '0 auto 16px' }} />
+          {[
+            { id: 'portfolio', label: 'My Portfolio', icon: '💰' },
+          ].map(s => (
+            <button key={s.id} onClick={() => handleSectionClick(s.id)} style={{
+              display: 'flex', alignItems: 'center', gap: '12px',
+              width: '100%', padding: '13px 14px', marginBottom: '4px',
+              borderRadius: '12px', border: 'none', cursor: 'pointer',
+              background: activeSection === s.id
+                ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)')
+                : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
+              textAlign: 'left',
+            }}>
+              <span style={{ fontSize: '22px' }}>{s.icon}</span>
+              <span style={{ fontSize: '15px', fontWeight: '500',
+                color: dark ? '#D4C8BC' : '#1A1410', fontFamily: 'var(--font-ui)' }}>
+                {s.label}
+              </span>
+            </button>
+          ))}
+          <a href="/account" style={{
+            display: 'flex', alignItems: 'center', gap: '12px',
+            width: '100%', padding: '13px 14px', marginBottom: '4px',
+            borderRadius: '12px', textDecoration: 'none',
+            background: dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8',
+          }}>
+            <span style={{ fontSize: '22px' }}>👤</span>
+            <span style={{ fontSize: '15px', fontWeight: '500',
+              color: dark ? '#D4C8BC' : '#1A1410', fontFamily: 'var(--font-ui)' }}>
+              Account
+            </span>
+          </a>
+          <a href="/pricing" style={{
+            display: 'flex', alignItems: 'center', gap: '12px',
+            width: '100%', padding: '13px 14px',
+            borderRadius: '12px', textDecoration: 'none',
+            background: dark ? 'rgba(201,168,76,0.08)' : 'rgba(201,168,76,0.06)',
+          }}>
+            <span style={{ fontSize: '22px' }}>⭐</span>
+            <span style={{ fontSize: '15px', fontWeight: '600',
+              color: 'var(--accent)', fontFamily: 'var(--font-ui)' }}>
+              View Plans
+            </span>
+          </a>
+        </div>
+      )}
+
       {/* ── Main Content ── */}
       <main style={{
-        marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
+        marginLeft: (!isMobile && sidebarOpen) ? `${SIDEBAR_W}px` : 0,
         paddingTop: `${headerH}px`,
+        paddingBottom: isMobile ? '80px' : 0,
         transition: isMobile ? 'none' : 'margin-left 0.28s cubic-bezier(0.4,0,0.2,1)',
         minHeight: '100vh',
       }}>
-
         {isPortfolio ? (
-          isPro ? (
-            <MyPortfolio />
-          ) : (
-            <div style={{ maxWidth: '820px', margin: '0 auto', padding: isMobile ? '40px 14px' : '60px 24px' }}>
-              <LockedSection requiredPlan="pro" />
-            </div>
-          )
+          <MyPortfolio />
         ) : (
           <div style={{
             maxWidth: '820px', margin: '0 auto',
-            padding: isMobile ? '20px 14px 60px' : '32px 24px 72px',
+            padding: isMobile ? '16px 14px 20px' : '32px 24px 72px',
           }}>
-            {isMobile && (
-              <p style={{
-                fontSize: '12px', fontFamily: 'var(--font-ui)',
-                fontWeight: '600', letterSpacing: '0.08em',
-                color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '16px',
-              }}>{activeSectionLabel}</p>
-            )}
 
             {activeSection === 'indian-markets' && isPro && (
               <MarketSummaryBanner market="indian" dark={dark} isMobile={isMobile} />
@@ -739,12 +776,12 @@ const isFree  = false
               <MarketSummaryBanner market="us" dark={dark} isMobile={isMobile} />
             )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
               <div style={{ height: '1px', flex: 1, background: dark ? '#2C2822' : '#EDE8E0' }} />
               <span style={{
-                fontSize: '11px', fontFamily: 'var(--font-ui)',
-                fontWeight: '600', letterSpacing: '0.1em',
+                fontSize: '11px', fontWeight: '600', letterSpacing: '0.1em',
                 color: dark ? '#4A4438' : '#C4B9AE', textTransform: 'uppercase',
+                fontFamily: 'var(--font-ui)',
               }}>
                 {loading ? 'Loading…' : `${articles.length} Stories`}
               </span>
@@ -756,10 +793,10 @@ const isFree  = false
                 background: dark ? '#2D1B00' : '#FFF3CD',
                 border: `1px solid ${dark ? '#7C4A00' : '#FFC107'}`,
                 borderRadius: '12px', padding: '14px 18px',
-                marginBottom: '24px', fontFamily: 'var(--font-ui)',
-                fontSize: '13px', color: dark ? '#FFC107' : '#856404',
+                marginBottom: '24px', fontSize: '13px',
+                color: dark ? '#FFC107' : '#856404',
               }}>
-                <strong>Database error:</strong> {fetchError}
+                <strong>Error:</strong> {fetchError}
               </div>
             )}
 
@@ -767,18 +804,13 @@ const isFree  = false
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {[0,1,2].map(i => <SkeletonCard key={i} />)}
               </div>
-
-            ) : isFree && activeSection !== 'headlines' ? (
-              <LockedSection requiredPlan="basic" />
-
             ) : articles.length === 0 && !fetchError ? (
-              <div style={{ textAlign: 'center', padding: '60px 20px', fontFamily: 'var(--font-ui)' }}>
+              <div style={{ textAlign: 'center', padding: '60px 20px' }}>
                 <div style={{ fontSize: '40px', marginBottom: '16px' }}>📭</div>
                 <p style={{ fontSize: '15px', fontWeight: '500', color: dark ? '#6B6055' : '#9A8E7E' }}>
                   No articles in this section yet.
                 </p>
               </div>
-
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '16px' : '24px' }}>
                 {articles.map((article, index) => (
@@ -787,43 +819,13 @@ const isFree  = false
                     <ArticleCard article={article} dark={dark} isPro={isPro} isBasic={isBasic} />
                   </div>
                 ))}
-
-                {/* Upgrade prompt after 5 free articles */}
-                {isFree && activeSection === 'headlines' && articles.length >= 5 && (
-                  <div style={{
-                    textAlign: 'center', padding: '32px 20px',
-                    background: dark ? 'rgba(201,168,76,0.06)' : 'rgba(201,168,76,0.04)',
-                    border: `1px solid ${dark ? 'rgba(201,168,76,0.15)' : 'rgba(201,168,76,0.12)'}`,
-                    borderRadius: '16px',
-                  }}>
-                    <p style={{
-                      fontSize: '16px', fontWeight: '700',
-                      color: dark ? '#F0EBE3' : '#1a1410', marginBottom: '8px',
-                    }}>
-                      You've reached the free limit
-                    </p>
-                    <p style={{
-                      fontSize: '14px', color: dark ? '#6B6055' : '#9a8e7e', marginBottom: '20px',
-                    }}>
-                      Upgrade to Basic for unlimited headlines + all sections.
-                    </p>
-                    <a href="/pricing" style={{
-                      display: 'inline-block', padding: '12px 28px',
-                      background: '#C9A84C', color: '#fff',
-                      borderRadius: '10px', fontSize: '14px',
-                      fontWeight: '700', textDecoration: 'none',
-                    }}>
-                      Upgrade from ₹99/month →
-                    </a>
-                  </div>
-                )}
               </div>
             )}
 
             <div style={{
               marginTop: '48px', paddingTop: '24px',
               borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
-              textAlign: 'center', fontFamily: 'var(--font-ui)',
+              textAlign: 'center',
             }}>
               <p style={{ fontSize: '12px', color: dark ? '#3C3530' : '#C4B9AE', letterSpacing: '0.05em' }}>
                 Finance Digest · Powered by AI · News simplified for everyone
@@ -832,6 +834,17 @@ const isFree  = false
           </div>
         )}
       </main>
+
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to   { transform: translateY(0);    opacity: 1; }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-4px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   )
 }
