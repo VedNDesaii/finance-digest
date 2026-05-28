@@ -5,6 +5,7 @@ import ArticleCard from '../components/ArticleCard'
 import NewsReader from '../components/NewsReader'
 import MyPortfolio from '../components/MyPortfolio'
 import MarketSummaryBanner from '../components/MarketSummaryBanner'
+import { useAuth } from './hooks/useAuth'
 
 const SIDEBAR_GROUPS = [
   { type: 'item', id: 'headlines', label: 'Major Headlines', icon: '🔥' },
@@ -64,25 +65,50 @@ const SECTOR_IDS = [
   'renewables','real-estate','infrastructure','fmcg-consumer','telecom-media',
 ]
 
+const BASIC_SECTIONS = [
+  'indian-markets','us-markets','global-economy','macro-policy','banking-finance',
+  ...SECTOR_IDS,
+]
+
 const SIDEBAR_W = 224
+
+// ✅ Check if Indian market is open (9:15 AM - 3:30 PM IST, Mon-Fri)
+function isMarketOpen() {
+  const now = new Date()
+  const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }))
+  const day = ist.getDay()
+  const h   = ist.getHours()
+  const m   = ist.getMinutes()
+  const mins = h * 60 + m
+  if (day === 0 || day === 6) return false
+  return mins >= 555 && mins <= 930 // 9:15 = 555, 15:30 = 930
+}
 
 function IndexChip({ label, data, dark, mobile }) {
   if (!data?.price) return null
   const up = parseFloat(data.change) >= 0
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: mobile ? '5px' : '7px',
+      display: 'flex', alignItems: 'center', gap: mobile ? '4px' : '6px',
       background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
       borderRadius: '8px', padding: mobile ? '4px 8px' : '6px 12px',
       border: `1px solid ${dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'}`,
     }}>
-      <span style={{ fontSize: mobile ? '10px' : '11px', fontFamily: 'var(--font-ui)', fontWeight: '600',
-        letterSpacing: '0.05em', textTransform: 'uppercase',
-        color: dark ? '#6B6055' : '#9A8E7E' }}>{label}</span>
-      <span style={{ fontSize: mobile ? '12px' : '13px', fontWeight: '600', fontFamily: 'var(--font-ui)',
-        color: dark ? '#F0EBE3' : '#1A1410' }}>{data.price}</span>
-      <span style={{ fontSize: mobile ? '11px' : '12px', fontWeight: '600', fontFamily: 'var(--font-ui)',
-        color: up ? '#4ADE80' : '#F87171' }}>
+      <span style={{
+        fontSize: mobile ? '9px' : '10px',
+        fontFamily: 'var(--font-ui)', fontWeight: '700',
+        letterSpacing: '0.04em', textTransform: 'uppercase',
+        color: dark ? '#6B6055' : '#9A8E7E',
+      }}>{label}</span>
+      <span style={{
+        fontSize: mobile ? '12px' : '13px', fontWeight: '600',
+        fontFamily: 'var(--font-ui)', color: dark ? '#F0EBE3' : '#1A1410',
+      }}>{data.price}</span>
+      <span style={{
+        fontSize: mobile ? '10px' : '11px', fontWeight: '600',
+        fontFamily: 'var(--font-ui)',
+        color: up ? '#4ADE80' : '#F87171',
+      }}>
         {up ? '▲' : '▼'} {Math.abs(data.pct)}%
       </span>
     </div>
@@ -91,35 +117,58 @@ function IndexChip({ label, data, dark, mobile }) {
 
 function ThemeToggle({ dark, onToggle }) {
   return (
-    <button onClick={onToggle}
-      style={{
-        width: '34px', height: '34px', borderRadius: '50%', border: 'none',
-        background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)',
-        color: dark ? '#F0EBE3' : '#1A1410',
-        cursor: 'pointer', fontSize: '15px', display: 'flex',
-        alignItems: 'center', justifyContent: 'center',
-        flexShrink: 0,
-      }}>
+    <button onClick={onToggle} style={{
+      width: '34px', height: '34px', borderRadius: '50%', border: 'none',
+      background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)',
+      color: dark ? '#F0EBE3' : '#1A1410',
+      cursor: 'pointer', fontSize: '15px', display: 'flex',
+      alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    }}>
       {dark ? '☀️' : '🌙'}
     </button>
   )
 }
 
-// ✅ Badge component — gold pill with article count
 function Badge({ count, active, dark }) {
   if (!count && count !== 0) return null
   return (
     <span style={{
       fontSize: '10px', fontWeight: '700',
-      background: active
-        ? 'var(--accent)'
-        : (dark ? 'rgba(232,151,62,0.15)' : 'rgba(212,135,60,0.12)'),
+      background: active ? 'var(--accent)' : (dark ? 'rgba(232,151,62,0.15)' : 'rgba(212,135,60,0.12)'),
       color: active ? '#1A1410' : 'var(--accent)',
       padding: '2px 7px', borderRadius: '99px',
-      fontFamily: 'var(--font-ui)',
-      minWidth: '20px', textAlign: 'center',
-      flexShrink: 0,
+      fontFamily: 'var(--font-ui)', minWidth: '20px',
+      textAlign: 'center', flexShrink: 0,
     }}>{count}</span>
+  )
+}
+
+function AccountBtn({ user, plan, dark, mobile }) {
+  if (!user) return (
+    <a href="/login" style={{
+      display: 'flex', alignItems: 'center',
+      padding: mobile ? '5px 10px' : '6px 14px',
+      borderRadius: '8px', background: '#C9A84C',
+      color: '#fff', fontSize: mobile ? '11px' : '12px',
+      fontWeight: '700', textDecoration: 'none',
+      fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap',
+    }}>
+      Sign In
+    </a>
+  )
+  const label = plan === 'pro' ? '⭐ Pro' : plan === 'basic' ? '✦ Basic' : '👤 Account'
+  return (
+    <a href="/account" style={{
+      display: 'flex', alignItems: 'center',
+      padding: mobile ? '5px 10px' : '6px 12px',
+      borderRadius: '8px',
+      background: dark ? 'rgba(201,168,76,0.15)' : 'rgba(201,168,76,0.12)',
+      color: 'var(--accent)', fontSize: mobile ? '11px' : '12px',
+      fontWeight: '600', textDecoration: 'none',
+      fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap',
+    }}>
+      {label}
+    </a>
   )
 }
 
@@ -133,12 +182,16 @@ export default function Home() {
   const [fetchError, setFetchError]       = useState(null)
   const [dark, setDark]                   = useState(false)
   const [isMobile, setIsMobile]           = useState(false)
-  // ✅ Article counts per section for badges
   const [sectionCounts, setSectionCounts] = useState({})
   const [indices, setIndices]             = useState({
     sensex: { price: null, change: null, pct: null },
     nifty:  { price: null, change: null, pct: null },
   })
+
+  const { user, plan } = useAuth()
+const isPro   = true
+const isBasic = true
+const isFree  = false
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
@@ -147,9 +200,7 @@ export default function Home() {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  useEffect(() => {
-    setSidebarOpen(!isMobile)
-  }, [isMobile])
+  useEffect(() => { setSidebarOpen(!isMobile) }, [isMobile])
 
   const sidebarWidth = sidebarOpen ? SIDEBAR_W : 0
   const isPortfolio  = activeSection === 'portfolio'
@@ -170,39 +221,32 @@ export default function Home() {
     })
   }
 
-  // ✅ Fetch article counts for all sections at once
   useEffect(() => {
     async function fetchCounts() {
       try {
-        // Get all processed articles — just category + is_headline
         const { data } = await supabase
           .from('processed_articles')
           .select('category, is_headline')
-
         if (!data) return
-
         const counts = {}
         let headlineCount = 0
-
         data.forEach(row => {
           const cat = row.category
           if (cat) counts[cat] = (counts[cat] || 0) + 1
           if (row.is_headline) headlineCount++
         })
-
         counts['headlines'] = headlineCount
         setSectionCounts(counts)
-      } catch (e) {
-        console.error('Count fetch failed', e)
-      }
+      } catch (e) { console.error('Count fetch failed', e) }
     }
     fetchCounts()
   }, [])
 
   useEffect(() => {
     if (!isPortfolio) fetchArticles(activeSection)
-  }, [activeSection])
+  }, [activeSection, isFree, isBasic, isPro])
 
+  // ✅ Live indices — polls every 5s during market hours, every 60s otherwise
   useEffect(() => {
     async function fetchIndices() {
       try {
@@ -211,7 +255,14 @@ export default function Home() {
         setIndices(data)
       } catch (e) { console.error('Index fetch failed', e) }
     }
+
     fetchIndices()
+
+    const interval = setInterval(() => {
+      fetchIndices()
+    }, isMarketOpen() ? 5000 : 60000)
+
+    return () => clearInterval(interval)
   }, [])
 
   async function fetchArticles(section) {
@@ -219,13 +270,21 @@ export default function Home() {
     setCurrentIndex(0)
     setFetchError(null)
     try {
+      if (isFree && section !== 'headlines') {
+        setArticles([])
+        setLoading(false)
+        return
+      }
+
       let query = supabase
         .from('processed_articles')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(section === 'headlines' ? 20 : 12)
+        .limit(section === 'headlines' ? (isFree ? 5 : 20) : 12)
+
       if (section === 'headlines') query = query.eq('is_headline', true)
       else query = query.eq('category', section)
+
       const { data, error } = await query
       if (error) { setFetchError(error.message); setArticles([]) }
       else setArticles(data || [])
@@ -257,6 +316,7 @@ export default function Home() {
 
   const itemStyle = (id) => {
     const active = activeSection === id
+    const locked = isFree && BASIC_SECTIONS.includes(id)
     return {
       display: 'flex', alignItems: 'center', gap: '9px',
       width: '100%', textAlign: 'left',
@@ -267,7 +327,9 @@ export default function Home() {
         : 'transparent',
       color: active
         ? (dark ? '#E8973E' : '#B86E22')
-        : (dark ? '#7A6B5A' : '#7A6B5A'),
+        : locked
+          ? (dark ? '#3A3028' : '#C4B9AE')
+          : (dark ? '#7A6B5A' : '#7A6B5A'),
       fontSize: '14px',
       fontWeight: active ? '600' : '400',
       cursor: 'pointer',
@@ -289,8 +351,7 @@ export default function Home() {
 
   const SkeletonCard = () => (
     <div style={{
-      background: 'var(--bg-card)',
-      borderRadius: '18px',
+      background: 'var(--bg-card)', borderRadius: '18px',
       border: '1px solid var(--border-main)',
       overflow: 'hidden', padding: '24px',
     }}>
@@ -301,7 +362,52 @@ export default function Home() {
     </div>
   )
 
- const headerH = (!isPortfolio && articles.length > 0) ? (isMobile ? 148 : 108) : (isMobile ? 90 : 72)
+  const LockedSection = ({ requiredPlan = 'basic' }) => (
+    <div style={{ textAlign: 'center', padding: '60px 20px', fontFamily: 'var(--font-ui)' }}>
+      <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
+      <p style={{
+        fontSize: '18px', fontWeight: '700',
+        color: dark ? '#F0EBE3' : '#1a1410', marginBottom: '8px',
+      }}>
+        {requiredPlan === 'pro' ? 'Pro Feature' : 'Upgrade to Read'}
+      </p>
+      <p style={{
+        fontSize: '14px', color: dark ? '#6B6055' : '#9a8e7e',
+        marginBottom: '28px', maxWidth: '300px',
+        margin: '0 auto 28px', lineHeight: '1.6',
+      }}>
+        {requiredPlan === 'pro'
+          ? 'Upgrade to Pro (₹199/month) to unlock this feature.'
+          : 'Upgrade to Basic (₹99/month) to access all news sections.'}
+      </p>
+      <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <a href="/pricing" style={{
+          display: 'inline-block', padding: '12px 28px',
+          background: '#C9A84C', color: '#fff',
+          borderRadius: '10px', fontSize: '14px',
+          fontWeight: '700', textDecoration: 'none',
+        }}>
+          View Plans →
+        </a>
+        {!user && (
+          <a href="/login" style={{
+            display: 'inline-block', padding: '12px 28px',
+            background: 'transparent',
+            border: `1px solid ${dark ? '#4A4438' : '#e8e0d5'}`,
+            color: dark ? '#9A8E7E' : '#5a4f3e',
+            borderRadius: '10px', fontSize: '14px',
+            fontWeight: '600', textDecoration: 'none',
+          }}>
+            Sign In
+          </a>
+        )}
+      </div>
+    </div>
+  )
+
+  const headerH = (!isPortfolio && articles.length > 0 && isPro)
+    ? (isMobile ? 148 : 108)
+    : (isMobile ? 90 : 72)
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh', fontFamily: 'var(--font-ui)' }}>
@@ -350,25 +456,49 @@ export default function Home() {
             }}>✕</button>
           </div>
 
+          {/* User plan badge */}
+          {user && (
+            <a href="/account" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '10px 12px', marginBottom: '8px',
+              borderRadius: '9px', textDecoration: 'none',
+              background: dark ? 'rgba(201,168,76,0.1)' : 'rgba(201,168,76,0.08)',
+              border: `1px solid ${dark ? 'rgba(201,168,76,0.2)' : 'rgba(201,168,76,0.15)'}`,
+            }}>
+              <span style={{ fontSize: '12px', color: dark ? '#9A8E7E' : '#7A6B5A', fontFamily: 'var(--font-ui)' }}>
+                {user.email?.split('@')[0]}
+              </span>
+              <span style={{
+                fontSize: '10px', fontWeight: '700',
+                background: plan === 'pro' ? '#1a1410' : plan === 'basic' ? '#C9A84C' : '#e8e0d5',
+                color: plan === 'pro' ? '#C9A84C' : plan === 'basic' ? '#fff' : '#9a8e7e',
+                padding: '2px 8px', borderRadius: '99px',
+                fontFamily: 'var(--font-ui)',
+              }}>
+                {plan === 'pro' ? '⭐ PRO' : plan === 'basic' ? '✦ BASIC' : 'FREE'}
+              </span>
+            </a>
+          )}
+
           {SIDEBAR_GROUPS.map((group, i) => {
             if (group.type === 'divider') return <div key={i} style={divStyle} />
 
             if (group.type === 'item') {
-              const count = sectionCounts[group.id]
+              const count  = sectionCounts[group.id]
               const active = activeSection === group.id
+              const locked = isFree && BASIC_SECTIONS.includes(group.id)
               return (
                 <button key={group.id} onClick={() => handleSectionClick(group.id)} style={itemStyle(group.id)}>
                   <span style={{ fontSize: '15px', lineHeight: 1 }}>{group.icon}</span>
                   <span style={{ flex: 1 }}>{group.label}</span>
-                  {/* ✅ Show badge with count */}
-                  {count > 0 && <Badge count={count} active={active} dark={dark} />}
+                  {locked && <span style={{ fontSize: '10px', color: dark ? '#3A3028' : '#C4B9AE' }}>🔒</span>}
+                  {!locked && count > 0 && <Badge count={count} active={active} dark={dark} />}
                 </button>
               )
             }
 
             const isOpen      = openGroups[group.id] ?? false
             const childActive = group.children.some(c => c.id === activeSection)
-            // Sum counts for all children in this group
             const groupCount  = group.children.reduce((sum, c) => sum + (sectionCounts[c.id] || 0), 0)
 
             return (
@@ -393,15 +523,14 @@ export default function Home() {
                 }}>
                   <span style={{ fontSize: '15px', lineHeight: 1 }}>{group.icon}</span>
                   <span style={{ flex: 1 }}>{group.label}</span>
-                  {/* ✅ Group total badge — only when collapsed */}
-                  {!isOpen && groupCount > 0 && (
+                  {!isOpen && groupCount > 0 && !isFree && (
                     <Badge count={groupCount} active={childActive} dark={dark} />
                   )}
+                  {!isOpen && isFree && <span style={{ fontSize: '10px', color: dark ? '#3A3028' : '#C4B9AE' }}>🔒</span>}
                   <span style={{
                     fontSize: '9px', color: dark ? '#4A4438' : '#C4B9AE',
                     transform: isOpen ? 'rotate(90deg)' : 'rotate(0)',
-                    transition: 'transform 0.2s', display: 'inline-block',
-                    marginLeft: '2px',
+                    transition: 'transform 0.2s', display: 'inline-block', marginLeft: '2px',
                   }}>▶</span>
                 </button>
                 <div style={{
@@ -410,15 +539,18 @@ export default function Home() {
                   transition: 'max-height 0.22s ease',
                 }}>
                   {group.children.map(child => {
-                    const childCount = sectionCounts[child.id]
+                    const childCount    = sectionCounts[child.id]
                     const childIsActive = activeSection === child.id
+                    const childLocked   = isFree
                     return (
                       <button key={child.id} onClick={() => handleSectionClick(child.id)}
                         style={{ ...itemStyle(child.id), paddingLeft: '30px', fontSize: '13px' }}>
                         <span style={{ fontSize: '13px', lineHeight: 1 }}>{child.icon}</span>
                         <span style={{ flex: 1 }}>{child.label}</span>
-                        {/* ✅ Per-child badge */}
-                        {childCount > 0 && <Badge count={childCount} active={childIsActive} dark={dark} />}
+                        {childLocked
+                          ? <span style={{ fontSize: '10px', color: dark ? '#3A3028' : '#C4B9AE' }}>🔒</span>
+                          : childCount > 0 && <Badge count={childCount} active={childIsActive} dark={dark} />
+                        }
                       </button>
                     )
                   })}
@@ -426,6 +558,35 @@ export default function Home() {
               </div>
             )
           })}
+
+          {/* Upgrade prompt for free users */}
+          {isFree && (
+            <div style={{
+              marginTop: '16px', padding: '14px',
+              background: dark ? 'rgba(201,168,76,0.08)' : 'rgba(201,168,76,0.06)',
+              border: `1px solid ${dark ? 'rgba(201,168,76,0.2)' : 'rgba(201,168,76,0.15)'}`,
+              borderRadius: '10px',
+            }}>
+              <p style={{
+                fontSize: '12px', fontWeight: '700',
+                color: 'var(--accent)', margin: '0 0 4px',
+                fontFamily: 'var(--font-ui)',
+              }}>Unlock everything</p>
+              <p style={{
+                fontSize: '11px', color: dark ? '#6B6055' : '#9a8e7e',
+                margin: '0 0 10px', fontFamily: 'var(--font-ui)', lineHeight: '1.5',
+              }}>All sections from ₹99/mo</p>
+              <a href="/pricing" style={{
+                display: 'block', textAlign: 'center',
+                padding: '8px', background: '#C9A84C',
+                color: '#fff', borderRadius: '7px',
+                fontSize: '12px', fontWeight: '700',
+                textDecoration: 'none', fontFamily: 'var(--font-ui)',
+              }}>
+                View Plans →
+              </a>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -439,94 +600,93 @@ export default function Home() {
         transition: isMobile ? 'none' : 'left 0.28s cubic-bezier(0.4,0,0.2,1)',
       }}>
         <div style={{ height: '3px', background: 'linear-gradient(90deg, var(--accent), #F0A84A, var(--accent))' }} />
-        {/* ── Mobile header: stacked 2 rows ── */}
-{isMobile ? (
-  <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
-    {/* Row 1: hamburger + title + theme toggle */}
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <button onClick={() => setSidebarOpen(o => !o)} style={{
-          background: 'none', border: 'none',
-          color: dark ? '#6B6055' : '#9A8E7E',
-          fontSize: '20px', cursor: 'pointer',
-          padding: '4px', lineHeight: 1, flexShrink: 0,
-        }}>☰</button>
-        <h1 style={{
-          fontSize: '18px', fontWeight: '700',
-          color: dark ? '#F0EBE3' : '#1A1410',
-          margin: '0', letterSpacing: '-0.03em',
-          fontFamily: 'var(--font-display)', lineHeight: 1.1,
-          whiteSpace: 'nowrap',
-        }}>
-          Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
-        </h1>
-      </div>
-      <ThemeToggle dark={dark} onToggle={toggleTheme} />
-    </div>
+        {isMobile ? (
+          <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button onClick={() => setSidebarOpen(o => !o)} style={{
+                  background: 'none', border: 'none',
+                  color: dark ? '#6B6055' : '#9A8E7E',
+                  fontSize: '20px', cursor: 'pointer',
+                  padding: '4px', lineHeight: 1, flexShrink: 0,
+                }}>☰</button>
+                <h1 style={{
+                  fontSize: '18px', fontWeight: '700',
+                  color: dark ? '#F0EBE3' : '#1A1410',
+                  margin: '0', letterSpacing: '-0.03em',
+                  fontFamily: 'var(--font-display)', lineHeight: 1.1, whiteSpace: 'nowrap',
+                }}>
+                  Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
+                </h1>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AccountBtn user={user} plan={plan} dark={dark} mobile={true} />
+                <ThemeToggle dark={dark} onToggle={toggleTheme} />
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {/* ✅ Full names */}
+                <IndexChip label="SENSEX" data={indices.sensex} dark={dark} mobile={true} />
+                <IndexChip label="NIFTY 50" data={indices.nifty} dark={dark} mobile={true} />
+              </div>
+              {activeSectionLabel && (
+                <span style={{
+                  fontSize: '10px', fontFamily: 'var(--font-ui)',
+                  fontWeight: '600', letterSpacing: '0.07em',
+                  color: 'var(--accent)', textTransform: 'uppercase',
+                }}>
+                  {activeSectionLabel}
+                </span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div style={{
+            padding: '12px 24px', display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between', gap: '10px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+              <button onClick={() => setSidebarOpen(o => !o)} style={{
+                background: 'none', border: 'none',
+                color: dark ? '#6B6055' : '#9A8E7E',
+                fontSize: '20px', cursor: 'pointer',
+                padding: '4px', lineHeight: 1, flexShrink: 0,
+              }}>☰</button>
+              <div style={{ minWidth: 0 }}>
+                <h1 style={{
+                  fontSize: '22px', fontWeight: '700',
+                  color: dark ? '#F0EBE3' : '#1A1410',
+                  margin: '0', letterSpacing: '-0.03em',
+                  fontFamily: 'var(--font-display)', lineHeight: 1.1, whiteSpace: 'nowrap',
+                }}>
+                  Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
+                </h1>
+                <p style={{
+                  fontSize: '10px', color: dark ? '#4A4438' : '#B8AFA3',
+                  margin: '2px 0 0', fontFamily: 'var(--font-ui)',
+                  letterSpacing: '0.07em', textTransform: 'uppercase',
+                }}>
+                  {today}
+                  {activeSectionLabel && (
+                    <span style={{ color: 'var(--accent)', marginLeft: '6px' }}>· {activeSectionLabel}</span>
+                  )}
+                </p>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+              {/* ✅ Full names */}
+              <IndexChip label="SENSEX" data={indices.sensex} dark={dark} mobile={false} />
+              <IndexChip label="NIFTY 50" data={indices.nifty} dark={dark} mobile={false} />
+              <AccountBtn user={user} plan={plan} dark={dark} mobile={false} />
+              <ThemeToggle dark={dark} onToggle={toggleTheme} />
+            </div>
+          </div>
+        )}
 
-    {/* Row 2: index chips + active section */}
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <IndexChip label="S" data={indices.sensex} dark={dark} mobile={true} />
-        <IndexChip label="N" data={indices.nifty} dark={dark} mobile={true} />
-      </div>
-      {activeSectionLabel && (
-        <span style={{
-          fontSize: '10px', fontFamily: 'var(--font-ui)',
-          fontWeight: '600', letterSpacing: '0.07em',
-          color: 'var(--accent)', textTransform: 'uppercase',
-        }}>
-          {activeSectionLabel}
-        </span>
-      )}
-    </div>
-  </div>
-) : (
-  /* ── Desktop header: single row ── */
-  <div style={{
-    padding: '12px 24px',
-    display: 'flex', alignItems: 'center',
-    justifyContent: 'space-between', gap: '10px',
-  }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-      <button onClick={() => setSidebarOpen(o => !o)} style={{
-        background: 'none', border: 'none',
-        color: dark ? '#6B6055' : '#9A8E7E',
-        fontSize: '20px', cursor: 'pointer',
-        padding: '4px', lineHeight: 1, flexShrink: 0,
-      }}>☰</button>
-      <div style={{ minWidth: 0 }}>
-        <h1 style={{
-          fontSize: '22px', fontWeight: '700',
-          color: dark ? '#F0EBE3' : '#1A1410',
-          margin: '0', letterSpacing: '-0.03em',
-          fontFamily: 'var(--font-display)', lineHeight: 1.1,
-          whiteSpace: 'nowrap',
-        }}>
-          Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
-        </h1>
-        <p style={{
-          fontSize: '10px', color: dark ? '#4A4438' : '#B8AFA3',
-          margin: '2px 0 0', fontFamily: 'var(--font-ui)',
-          letterSpacing: '0.07em', textTransform: 'uppercase',
-        }}>
-          {today}
-          {activeSectionLabel && (
-            <span style={{ color: 'var(--accent)', marginLeft: '6px' }}>· {activeSectionLabel}</span>
-          )}
-        </p>
-      </div>
-    </div>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-      <IndexChip label="S" data={indices.sensex} dark={dark} mobile={false} />
-      <IndexChip label="N" data={indices.nifty} dark={dark} mobile={false} />
-      <ThemeToggle dark={dark} onToggle={toggleTheme} />
-    </div>
-  </div>
-)}
-
-        {!isPortfolio && articles.length > 0 && (
+        {/* Voice Agent — Pro only */}
+        {!isPortfolio && articles.length > 0 && isPro && (
           <div style={{
             borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
             background: dark ? '#111009' : '#FAFAF7',
@@ -550,8 +710,15 @@ export default function Home() {
         transition: isMobile ? 'none' : 'margin-left 0.28s cubic-bezier(0.4,0,0.2,1)',
         minHeight: '100vh',
       }}>
+
         {isPortfolio ? (
-          <MyPortfolio />
+          isPro ? (
+            <MyPortfolio />
+          ) : (
+            <div style={{ maxWidth: '820px', margin: '0 auto', padding: isMobile ? '40px 14px' : '60px 24px' }}>
+              <LockedSection requiredPlan="pro" />
+            </div>
+          )
         ) : (
           <div style={{
             maxWidth: '820px', margin: '0 auto',
@@ -561,17 +728,17 @@ export default function Home() {
               <p style={{
                 fontSize: '12px', fontFamily: 'var(--font-ui)',
                 fontWeight: '600', letterSpacing: '0.08em',
-                color: 'var(--accent)', textTransform: 'uppercase',
-                marginBottom: '16px',
+                color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '16px',
               }}>{activeSectionLabel}</p>
             )}
-            {(activeSection === 'indian-markets') && (
-             <MarketSummaryBanner market="indian" dark={dark} isMobile={isMobile} />
-             )}
- 
-             {(activeSection === 'us-markets') && (
-            <MarketSummaryBanner market="us" dark={dark} isMobile={isMobile} />
-             )}
+
+            {activeSection === 'indian-markets' && isPro && (
+              <MarketSummaryBanner market="indian" dark={dark} isMobile={isMobile} />
+            )}
+            {activeSection === 'us-markets' && isPro && (
+              <MarketSummaryBanner market="us" dark={dark} isMobile={isMobile} />
+            )}
+
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
               <div style={{ height: '1px', flex: 1, background: dark ? '#2C2822' : '#EDE8E0' }} />
               <span style={{
@@ -600,21 +767,56 @@ export default function Home() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {[0,1,2].map(i => <SkeletonCard key={i} />)}
               </div>
+
+            ) : isFree && activeSection !== 'headlines' ? (
+              <LockedSection requiredPlan="basic" />
+
             ) : articles.length === 0 && !fetchError ? (
               <div style={{ textAlign: 'center', padding: '60px 20px', fontFamily: 'var(--font-ui)' }}>
                 <div style={{ fontSize: '40px', marginBottom: '16px' }}>📭</div>
-                <p style={{ fontSize: '15px', fontWeight: '500', color: dark ? '#6B6055' : '#9A8E7E', marginBottom: '8px' }}>
+                <p style={{ fontSize: '15px', fontWeight: '500', color: dark ? '#6B6055' : '#9A8E7E' }}>
                   No articles in this section yet.
                 </p>
               </div>
+
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '16px' : '24px' }}>
                 {articles.map((article, index) => (
                   <div key={article.id} id={`article-${index}`} className="article-enter"
                     style={{ animationDelay: `${Math.min(index * 0.05, 0.25)}s` }}>
-                    <ArticleCard article={article} dark={dark} />
+                    <ArticleCard article={article} dark={dark} isPro={isPro} isBasic={isBasic} />
                   </div>
                 ))}
+
+                {/* Upgrade prompt after 5 free articles */}
+                {isFree && activeSection === 'headlines' && articles.length >= 5 && (
+                  <div style={{
+                    textAlign: 'center', padding: '32px 20px',
+                    background: dark ? 'rgba(201,168,76,0.06)' : 'rgba(201,168,76,0.04)',
+                    border: `1px solid ${dark ? 'rgba(201,168,76,0.15)' : 'rgba(201,168,76,0.12)'}`,
+                    borderRadius: '16px',
+                  }}>
+                    <p style={{
+                      fontSize: '16px', fontWeight: '700',
+                      color: dark ? '#F0EBE3' : '#1a1410', marginBottom: '8px',
+                    }}>
+                      You've reached the free limit
+                    </p>
+                    <p style={{
+                      fontSize: '14px', color: dark ? '#6B6055' : '#9a8e7e', marginBottom: '20px',
+                    }}>
+                      Upgrade to Basic for unlimited headlines + all sections.
+                    </p>
+                    <a href="/pricing" style={{
+                      display: 'inline-block', padding: '12px 28px',
+                      background: '#C9A84C', color: '#fff',
+                      borderRadius: '10px', fontSize: '14px',
+                      fontWeight: '700', textDecoration: 'none',
+                    }}>
+                      Upgrade from ₹99/month →
+                    </a>
+                  </div>
+                )}
               </div>
             )}
 
