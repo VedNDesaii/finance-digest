@@ -7,7 +7,6 @@ import MyPortfolio from '../components/MyPortfolio'
 import MarketSummaryBanner from '../components/MarketSummaryBanner'
 import { useAuth } from './hooks/useAuth'
 
-// ── Desktop flat navigation ──
 const DESKTOP_NAV = [
   { type: 'label', text: 'GENERAL' },
   { id: 'headlines',       label: 'Major Headlines',  icon: '📰' },
@@ -33,7 +32,6 @@ const DESKTOP_NAV = [
   { id: 'portfolio',       label: 'My Portfolio',     icon: '💰' },
 ]
 
-// ── Mobile bottom tabs ──
 const BOTTOM_TABS = [
   { id: 'top',     icon: '📰', label: 'Top' },
   { id: 'markets', icon: '📈', label: 'Markets' },
@@ -49,16 +47,16 @@ const MARKETS_SECTIONS = [
 ]
 
 const SECTORS_SECTIONS = [
-  { id: 'technology-it',  label: 'Tech & IT',     icon: '💻' },
-  { id: 'energy-oil',     label: 'Energy',        icon: '⛽' },
-  { id: 'pharma-health',  label: 'Pharma',        icon: '💊' },
-  { id: 'auto-ev',        label: 'Auto & EV',     icon: '🚗' },
-  { id: 'metals-mining',  label: 'Metals',        icon: '⚙️' },
-  { id: 'renewables',     label: 'Renewables',    icon: '☀️' },
-  { id: 'real-estate',    label: 'Real Estate',   icon: '🏠' },
-  { id: 'infrastructure', label: 'Infra',         icon: '🔧' },
-  { id: 'fmcg-consumer',  label: 'FMCG',          icon: '🛒' },
-  { id: 'telecom-media',  label: 'Telecom',       icon: '📡' },
+  { id: 'technology-it',  label: 'Tech & IT',   icon: '💻' },
+  { id: 'energy-oil',     label: 'Energy',      icon: '⛽' },
+  { id: 'pharma-health',  label: 'Pharma',      icon: '💊' },
+  { id: 'auto-ev',        label: 'Auto & EV',   icon: '🚗' },
+  { id: 'metals-mining',  label: 'Metals',      icon: '⚙️' },
+  { id: 'renewables',     label: 'Renewables',  icon: '☀️' },
+  { id: 'real-estate',    label: 'Real Estate', icon: '🏠' },
+  { id: 'infrastructure', label: 'Infra',       icon: '🔧' },
+  { id: 'fmcg-consumer',  label: 'FMCG',        icon: '🛒' },
+  { id: 'telecom-media',  label: 'Telecom',     icon: '📡' },
 ]
 
 const ALL_SECTIONS = [
@@ -132,7 +130,6 @@ function IndexChip({ label, data, dark, mobile }) {
   )
 }
 
-// ✅ Theme toggle with text label
 function ThemeToggle({ dark, onToggle, mobile }) {
   return (
     <button onClick={onToggle} style={{
@@ -166,30 +163,8 @@ function Badge({ count, active, dark }) {
   )
 }
 
-function AccountBtn({ user, plan, dark, mobile }) {
-  if (!user) return (
-    <a href="/login" style={{
-      display: 'flex', alignItems: 'center',
-      padding: mobile ? '5px 10px' : '6px 14px',
-      borderRadius: '8px', background: '#C9A84C',
-      color: '#fff', fontSize: mobile ? '11px' : '12px',
-      fontWeight: '700', textDecoration: 'none',
-      fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap',
-    }}>Sign In</a>
-  )
-  const label = plan === 'pro' ? '⭐ Pro' : plan === 'basic' ? '✦ Basic' : '👤'
-  return (
-    <a href="/account" style={{
-      display: 'flex', alignItems: 'center',
-      padding: mobile ? '5px 10px' : '6px 12px',
-      borderRadius: '8px',
-      background: dark ? 'rgba(201,168,76,0.15)' : 'rgba(201,168,76,0.12)',
-      color: 'var(--accent)', fontSize: mobile ? '11px' : '12px',
-      fontWeight: '600', textDecoration: 'none',
-      fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap',
-    }}>{label}</a>
-  )
-}
+// ✅ Disabled — returns nothing
+function AccountBtn() { return null }
 
 export default function Home() {
   const [articles, setArticles]           = useState([])
@@ -338,7 +313,6 @@ export default function Home() {
     ? (isMobile ? 130 : 108)
     : (isMobile ? 82 : 72)
 
-  // ── Desktop sidebar item style ──
   const sidebarItemStyle = (id) => {
     const active = activeSection === id
     return {
@@ -352,10 +326,8 @@ export default function Home() {
       color: active
         ? (dark ? '#E8973E' : '#B86E22')
         : (dark ? '#7A6B5A' : '#6B5E4E'),
-      fontSize: '13px',
-      fontWeight: active ? '600' : '400',
-      cursor: 'pointer',
-      transition: 'background 0.15s, color 0.15s',
+      fontSize: '13px', fontWeight: active ? '600' : '400',
+      cursor: 'pointer', transition: 'background 0.15s, color 0.15s',
       fontFamily: 'var(--font-ui)',
       borderLeft: active
         ? `2px solid ${dark ? '#E8973E' : '#D4873C'}`
@@ -367,7 +339,6 @@ export default function Home() {
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh', fontFamily: 'var(--font-ui)' }}>
 
-      {/* ── Mobile overlay backdrop ── */}
       {isMobile && mobileOverlay && (
         <div onClick={() => setMobileOverlay(null)} style={{
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
@@ -375,7 +346,7 @@ export default function Home() {
         }} />
       )}
 
-      {/* ── Desktop sidebar backdrop ── */}
+      {/* ── Desktop sidebar ── */}
       {!isMobile && sidebarOpen && (
         <aside style={{
           position: 'fixed', top: 0, left: 0,
@@ -386,8 +357,6 @@ export default function Home() {
           transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1)',
         }}>
           <div style={{ padding: '20px 12px 40px', display: 'flex', flexDirection: 'column' }}>
-
-            {/* Logo */}
             <div style={{ marginBottom: '16px', padding: '0 4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <div style={{
@@ -407,30 +376,6 @@ export default function Home() {
               }}>✕</button>
             </div>
 
-            {/* User badge */}
-            {user && (
-              <a href="/account" style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '9px 12px', marginBottom: '12px',
-                borderRadius: '9px', textDecoration: 'none',
-                background: dark ? 'rgba(201,168,76,0.1)' : 'rgba(201,168,76,0.08)',
-                border: `1px solid ${dark ? 'rgba(201,168,76,0.2)' : 'rgba(201,168,76,0.15)'}`,
-              }}>
-                <span style={{ fontSize: '11px', color: dark ? '#9A8E7E' : '#7A6B5A' }}>
-                  {user.email?.split('@')[0]}
-                </span>
-                <span style={{
-                  fontSize: '9px', fontWeight: '700',
-                  background: plan === 'pro' ? '#1a1410' : plan === 'basic' ? '#C9A84C' : '#e8e0d5',
-                  color: plan === 'pro' ? '#C9A84C' : plan === 'basic' ? '#fff' : '#9a8e7e',
-                  padding: '2px 8px', borderRadius: '99px',
-                }}>
-                  {plan === 'pro' ? '⭐ PRO' : plan === 'basic' ? '✦ BASIC' : 'FREE'}
-                </span>
-              </a>
-            )}
-
-            {/* ✅ Flat navigation with category labels */}
             {DESKTOP_NAV.map((item, i) => {
               if (item.type === 'label') return (
                 <p key={i} style={{
@@ -465,7 +410,6 @@ export default function Home() {
         <div style={{ height: '3px', background: 'linear-gradient(90deg, var(--accent), #F0A84A, var(--accent))' }} />
 
         {isMobile ? (
-          // ── Mobile header ──
           <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: '7px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h1 style={{
@@ -475,10 +419,7 @@ export default function Home() {
               }}>
                 Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
               </h1>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <AccountBtn user={user} plan={plan} dark={dark} mobile={true} />
-                <ThemeToggle dark={dark} onToggle={toggleTheme} mobile={true} />
-              </div>
+              <ThemeToggle dark={dark} onToggle={toggleTheme} mobile={true} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', gap: '6px' }}>
@@ -492,7 +433,6 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          // ── Desktop header ──
           <div style={{
             padding: '12px 24px', display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', gap: '10px',
@@ -524,13 +464,11 @@ export default function Home() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
               <IndexChip label="SENSEX" data={indices.sensex} dark={dark} mobile={false} />
               <IndexChip label="NIFTY 50" data={indices.nifty} dark={dark} mobile={false} />
-              <AccountBtn user={user} plan={plan} dark={dark} mobile={false} />
               <ThemeToggle dark={dark} onToggle={toggleTheme} mobile={false} />
             </div>
           </div>
         )}
 
-        {/* Voice Agent */}
         {!isPortfolio && articles.length > 0 && isPro && (
           <div style={{
             borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
@@ -555,18 +493,14 @@ export default function Home() {
           boxShadow: dark ? 'none' : '0 -4px 20px rgba(0,0,0,0.06)',
         }}>
           {BOTTOM_TABS.map(tab => {
-            const isActive = activeMobileTab === tab.id ||
-              (mobileOverlay === tab.id)
+            const isActive = activeMobileTab === tab.id || mobileOverlay === tab.id
             return (
               <button key={tab.id} onClick={() => handleMobileTabClick(tab.id)} style={{
                 flex: 1, display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                gap: '3px', border: 'none',
-                background: 'none', cursor: 'pointer',
-                height: '100%', position: 'relative',
-                transition: 'opacity 0.15s',
+                gap: '3px', border: 'none', background: 'none',
+                cursor: 'pointer', height: '100%', position: 'relative',
               }}>
-                {/* Active indicator dot */}
                 {isActive && (
                   <div style={{
                     position: 'absolute', top: '6px',
@@ -577,15 +511,14 @@ export default function Home() {
                 <span style={{
                   fontSize: '22px', lineHeight: 1,
                   filter: isActive ? 'none' : 'grayscale(0.3) opacity(0.7)',
-                  transition: 'transform 0.15s',
                   transform: isActive ? 'scale(1.1)' : 'scale(1)',
+                  transition: 'transform 0.15s',
                 }}>{tab.icon}</span>
                 <span style={{
                   fontSize: '10px',
                   fontWeight: isActive ? '700' : '400',
                   color: isActive ? '#C9A84C' : (dark ? '#6B6055' : '#9A8E7E'),
                   fontFamily: 'var(--font-ui)',
-                  transition: 'color 0.15s',
                 }}>{tab.label}</span>
               </button>
             )
@@ -600,8 +533,7 @@ export default function Home() {
           background: dark ? '#1A1410' : '#fff',
           borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
           borderRadius: '20px 20px 0 0',
-          padding: '16px',
-          zIndex: 39,
+          padding: '16px', zIndex: 39,
           boxShadow: '0 -8px 32px rgba(0,0,0,0.12)',
           animation: 'slideUp 0.25s ease',
         }}>
@@ -620,9 +552,7 @@ export default function Home() {
               <span style={{ fontSize: '22px' }}>{s.icon}</span>
               <span style={{ fontSize: '15px', fontWeight: activeSection === s.id ? '600' : '400',
                 color: activeSection === s.id ? 'var(--accent)' : (dark ? '#D4C8BC' : '#1A1410'),
-                fontFamily: 'var(--font-ui)' }}>
-                {s.label}
-              </span>
+                fontFamily: 'var(--font-ui)' }}>{s.label}</span>
               {sectionCounts[s.id] > 0 && (
                 <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: '600',
                   color: 'var(--accent)', fontFamily: 'var(--font-ui)' }}>
@@ -631,10 +561,9 @@ export default function Home() {
               )}
             </button>
           ))}
-          {/* Also show Macro & Policy here */}
           <p style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em', color: dark ? '#4A4438' : '#C4B9AE', margin: '12px 0 8px', fontFamily: 'var(--font-ui)' }}>POLICY</p>
           {[
-            { id: 'macro-policy', label: 'Macro & Policy', icon: '🏛️' },
+            { id: 'macro-policy',    label: 'Macro & Policy',   icon: '🏛️' },
             { id: 'banking-finance', label: 'Banking & Finance', icon: '🏦' },
           ].map(s => (
             <button key={s.id} onClick={() => handleSectionClick(s.id)} style={{
@@ -649,9 +578,7 @@ export default function Home() {
               <span style={{ fontSize: '22px' }}>{s.icon}</span>
               <span style={{ fontSize: '15px', fontWeight: activeSection === s.id ? '600' : '400',
                 color: activeSection === s.id ? 'var(--accent)' : (dark ? '#D4C8BC' : '#1A1410'),
-                fontFamily: 'var(--font-ui)' }}>
-                {s.label}
-              </span>
+                fontFamily: 'var(--font-ui)' }}>{s.label}</span>
             </button>
           ))}
         </div>
@@ -664,8 +591,7 @@ export default function Home() {
           background: dark ? '#1A1410' : '#fff',
           borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
           borderRadius: '20px 20px 0 0',
-          padding: '16px',
-          zIndex: 39,
+          padding: '16px', zIndex: 39,
           boxShadow: '0 -8px 32px rgba(0,0,0,0.12)',
           animation: 'slideUp 0.25s ease',
         }}>
@@ -701,55 +627,26 @@ export default function Home() {
           background: dark ? '#1A1410' : '#fff',
           borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
           borderRadius: '20px 20px 0 0',
-          padding: '16px',
-          zIndex: 39,
+          padding: '16px', zIndex: 39,
           boxShadow: '0 -8px 32px rgba(0,0,0,0.12)',
           animation: 'slideUp 0.25s ease',
         }}>
           <div style={{ width: '36px', height: '3px', background: dark ? '#3A3028' : '#EDE8E0', borderRadius: '2px', margin: '0 auto 16px' }} />
-          {[
-            { id: 'portfolio', label: 'My Portfolio', icon: '💰' },
-          ].map(s => (
-            <button key={s.id} onClick={() => handleSectionClick(s.id)} style={{
-              display: 'flex', alignItems: 'center', gap: '12px',
-              width: '100%', padding: '13px 14px', marginBottom: '4px',
-              borderRadius: '12px', border: 'none', cursor: 'pointer',
-              background: activeSection === s.id
-                ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)')
-                : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
-              textAlign: 'left',
-            }}>
-              <span style={{ fontSize: '22px' }}>{s.icon}</span>
-              <span style={{ fontSize: '15px', fontWeight: '500',
-                color: dark ? '#D4C8BC' : '#1A1410', fontFamily: 'var(--font-ui)' }}>
-                {s.label}
-              </span>
-            </button>
-          ))}
-          <a href="/account" style={{
+          <button onClick={() => handleSectionClick('portfolio')} style={{
             display: 'flex', alignItems: 'center', gap: '12px',
             width: '100%', padding: '13px 14px', marginBottom: '4px',
-            borderRadius: '12px', textDecoration: 'none',
-            background: dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8',
+            borderRadius: '12px', border: 'none', cursor: 'pointer',
+            background: activeSection === 'portfolio'
+              ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)')
+              : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
+            textAlign: 'left',
           }}>
-            <span style={{ fontSize: '22px' }}>👤</span>
+            <span style={{ fontSize: '22px' }}>💰</span>
             <span style={{ fontSize: '15px', fontWeight: '500',
               color: dark ? '#D4C8BC' : '#1A1410', fontFamily: 'var(--font-ui)' }}>
-              Account
+              My Portfolio
             </span>
-          </a>
-          <a href="/pricing" style={{
-            display: 'flex', alignItems: 'center', gap: '12px',
-            width: '100%', padding: '13px 14px',
-            borderRadius: '12px', textDecoration: 'none',
-            background: dark ? 'rgba(201,168,76,0.08)' : 'rgba(201,168,76,0.06)',
-          }}>
-            <span style={{ fontSize: '22px' }}>⭐</span>
-            <span style={{ fontSize: '15px', fontWeight: '600',
-              color: 'var(--accent)', fontFamily: 'var(--font-ui)' }}>
-              View Plans
-            </span>
-          </a>
+          </button>
         </div>
       )}
 
@@ -768,7 +665,6 @@ export default function Home() {
             maxWidth: '820px', margin: '0 auto',
             padding: isMobile ? '16px 14px 20px' : '32px 24px 72px',
           }}>
-
             {activeSection === 'indian-markets' && isPro && (
               <MarketSummaryBanner market="indian" dark={dark} isMobile={isMobile} />
             )}
@@ -838,7 +734,7 @@ export default function Home() {
       <style>{`
         @keyframes slideUp {
           from { transform: translateY(20px); opacity: 0; }
-          to   { transform: translateY(0);    opacity: 1; }
+          to   { transform: translateY(0); opacity: 1; }
         }
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(-4px); }
