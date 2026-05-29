@@ -19,7 +19,7 @@ HEADLINE_MAX = 20
 # ✅ Budget guard
 COST_PER_M_INPUT  = 0.80
 COST_PER_M_OUTPUT = 4.00
-DAILY_BUDGET      = 0.85
+DAILY_BUDGET      = 0.72
 AVG_INPUT_TOKENS  = 600
 AVG_OUTPUT_TOKENS = 300
 COST_PER_ARTICLE  = (AVG_INPUT_TOKENS / 1_000_000) * COST_PER_M_INPUT + (AVG_OUTPUT_TOKENS / 1_000_000) * COST_PER_M_OUTPUT
@@ -207,11 +207,11 @@ REJECT: {{"verdict":"reject"}}
 ACCEPT: {{"verdict":"accept","category":"<str>","is_headline":true/false,"simplified_article":"PART1\\n\\nPART2","investor_take":"PART3","glossary":[{{"word":"","meaning":""}}]}}
 
 Title: {title}
-Content: {content[:1500]}"""
+Content: {content[:1000]}"""
 
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=1400,
+        max_tokens=900,
         messages=[{"role": "user", "content": prompt}]
     )
     text = message.content[0].text.strip()
@@ -245,7 +245,7 @@ Content: {content[:1000]}"""
 
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=1000,
+        max_tokens=700,
         messages=[{"role": "user", "content": prompt}]
     )
     text = message.content[0].text.strip()
