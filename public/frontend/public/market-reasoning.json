@@ -26,6 +26,74 @@
   "yesterday": {
     "date": "2026-05-29",
     "indian": {
+      "marketTime": "Market closed at 3:30 PM IST",
+      "updatedAt": "Updated at 3:45 PM IST",
+      "verdictSentiment": "negative",
+      "verdict": "Markets fell sharply due to US-Iran deal uncertainty and weak monsoon forecast—biggest reason was geopolitical tension over US-Iran talks.",
+      "watchOut": "Watch the 23,400 support level for Nifty tomorrow—any break below could trigger further weakness toward 23,200.",
+      "indices": [
+        {
+          "label": "Sensex",
+          "price": "74,775",
+          "change": "-1,092",
+          "pct": "-1.44"
+        },
+        {
+          "label": "Nifty 50",
+          "price": "23,547",
+          "change": "-359",
+          "pct": "-1.50"
+        },
+        {
+          "label": "Bank Nifty",
+          "price": "53,500",
+          "change": "-1,353",
+          "pct": "-2.46"
+        }
+      ],
+      "factors": [
+        {
+          "icon": "🌍",
+          "label": "Global cues",
+          "value": "US-Iran tensions",
+          "sub": "Uncertainty over peace deal pressured markets",
+          "sentiment": "negative"
+        },
+        {
+          "icon": "💵",
+          "label": "FII activity",
+          "value": "Likely outflows",
+          "sub": "Risk-off sentiment favored selling",
+          "sentiment": "negative"
+        },
+        {
+          "icon": "🛢️",
+          "label": "Oil & monsoon",
+          "value": "Weakness concerns",
+          "sub": "Weak monsoon forecast (90% of LPA) fueled selling",
+          "sentiment": "negative"
+        }
+      ],
+      "sectors": [
+        {
+          "name": "Metal",
+          "pct": "-2.10"
+        },
+        {
+          "name": "Oil & Gas",
+          "pct": "-2.05"
+        },
+        {
+          "name": "Banking",
+          "pct": "-2.46"
+        },
+        {
+          "name": "IT",
+          "pct": "+0.30"
+        }
+      ]
+    },
+    "us": {
       "marketTime": "Data unavailable",
       "updatedAt": "Please update manually",
       "verdictSentiment": "neutral",
@@ -34,81 +102,6 @@
       "indices": [],
       "factors": [],
       "sectors": []
-    },
-    "us": {
-      "marketTime": "NYSE/NASDAQ close at 4:00 PM ET",
-      "updatedAt": "Updated at 7:00 PM ET",
-      "verdictSentiment": "positive",
-      "verdict": "Tech stocks led markets to records as Snowflake surged on strong guidance, while cooler inflation data eased Fed concerns.",
-      "watchOut": "Watch for upcoming PCE inflation data—hotter-than-expected numbers could shift Fed rate expectations and pressure bond markets next session.",
-      "indices": [
-        {
-          "label": "S&P 500",
-          "price": "7,563.63",
-          "change": "+43",
-          "pct": "0.58"
-        },
-        {
-          "label": "Nasdaq",
-          "price": "26,917.47",
-          "change": "+243",
-          "pct": "0.91"
-        },
-        {
-          "label": "Dow Jones",
-          "price": "50,668.97",
-          "change": "+25",
-          "pct": "0.05"
-        }
-      ],
-      "factors": [
-        {
-          "icon": "🤖",
-          "label": "Snowflake earnings",
-          "value": "+36.5% surge",
-          "sub": "Strong AI outlook revived tech enthusiasm",
-          "sentiment": "positive"
-        },
-        {
-          "icon": "📉",
-          "label": "PCE inflation",
-          "value": "0.4% monthly",
-          "sub": "Softer than 0.5% expected, below Fed target",
-          "sentiment": "positive"
-        },
-        {
-          "icon": "🕊️",
-          "label": "Iran ceasefire",
-          "value": "60-day extension",
-          "sub": "US-Iran deal extends peace talks, eases risk-off tone",
-          "sentiment": "positive"
-        },
-        {
-          "icon": "🏦",
-          "label": "10yr yield",
-          "value": "4.50%",
-          "sub": "Rose 0.02 points as geopolitical tensions resurface",
-          "sentiment": "neutral"
-        }
-      ],
-      "sectors": [
-        {
-          "name": "Technology",
-          "pct": "0.91"
-        },
-        {
-          "name": "Software",
-          "pct": "2.8"
-        },
-        {
-          "name": "Semiconductors",
-          "pct": "1.2"
-        },
-        {
-          "name": "Financials",
-          "pct": "-0.3"
-        }
-      ]
     }
   }
 }
