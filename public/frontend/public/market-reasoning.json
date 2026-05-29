@@ -13,6 +13,29 @@
       "sectors": []
     },
     "us": {
+      "marketTime": "Data unavailable",
+      "updatedAt": "Please update manually",
+      "verdictSentiment": "neutral",
+      "verdict": "Could not fetch today's data. Please update the JSON manually.",
+      "watchOut": "",
+      "indices": [],
+      "factors": [],
+      "sectors": []
+    }
+  },
+  "yesterday": {
+    "date": "2026-05-29",
+    "indian": {
+      "marketTime": "Data unavailable",
+      "updatedAt": "Please update manually",
+      "verdictSentiment": "neutral",
+      "verdict": "Could not fetch today's data. Please update the JSON manually.",
+      "watchOut": "",
+      "indices": [],
+      "factors": [],
+      "sectors": []
+    },
+    "us": {
       "marketTime": "NYSE/NASDAQ close at 4:00 PM ET",
       "updatedAt": "Updated at 7:00 PM ET",
       "verdictSentiment": "positive",
@@ -87,10 +110,5 @@
         }
       ]
     }
-  },
-  "yesterday": {
-    "date": "2026-05-28",
-    "indian": {},
-    "us": {}
   }
 }

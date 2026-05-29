@@ -89,7 +89,7 @@ def call_claude(prompt: str) -> dict:
     print("  → Calling Claude API with web search...")
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-haiku-4-5-20251001",
         max_tokens=500,
         tools=[{"type": "web_search_20250305", "name": "web_search"}],
         messages=[{"role": "user", "content": prompt}],
@@ -182,4 +182,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
