@@ -18,9 +18,8 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
-# ✅ Increased from 6 → 25 to get enough articles per feed
 FETCH_PER_FEED = 25
-IMAGE_BUCKET = "article-images"
+IMAGE_BUCKET   = "article-images"
 
 
 def upload_image_to_supabase(image_url: str) -> str | None:
@@ -34,9 +33,9 @@ def upload_image_to_supabase(image_url: str) -> str | None:
         if not content_type.startswith("image/"):
             return None
         ext = "jpg"
-        if "png" in content_type:    ext = "png"
+        if "png"  in content_type: ext = "png"
         elif "webp" in content_type: ext = "webp"
-        elif "gif" in content_type:  ext = "gif"
+        elif "gif"  in content_type: ext = "gif"
         filename = f"{uuid.uuid4().hex}.{ext}"
         supabase.storage.from_(IMAGE_BUCKET).upload(
             path=filename,
@@ -49,6 +48,27 @@ def upload_image_to_supabase(image_url: str) -> str | None:
         return None
 
 
+# ✅ NEW — scrape og:image for full resolution image
+def get_og_image(url: str) -> str | None:
+    try:
+        r    = requests.get(url, headers=HEADERS, timeout=8, allow_redirects=True)
+        soup = BeautifulSoup(r.text, "html.parser")
+        og   = soup.find("meta", property="og:image")
+        if og and og.get("content"):
+            img = og["content"].strip()
+            if img.startswith("http"):
+                return img
+        # fallback — twitter:image
+        tw = soup.find("meta", attrs={"name": "twitter:image"})
+        if tw and tw.get("content"):
+            img = tw["content"].strip()
+            if img.startswith("http"):
+                return img
+    except Exception:
+        pass
+    return None
+
+
 RSS_FEEDS = [
     # ── Indian Markets ──
     {"url": "https://economictimes.indiatimes.com/markets/rss.cms",                                    "category": "indian-markets"},
@@ -57,7 +77,6 @@ RSS_FEEDS = [
     {"url": "https://www.business-standard.com/rss/markets-106.rss",                                   "category": "indian-markets"},
     {"url": "https://economictimes.indiatimes.com/markets/stocks/news/rss.cms",                        "category": "indian-markets"},
     {"url": "https://www.moneycontrol.com/rss/marketreports.xml",                                      "category": "indian-markets"},
-
     # ── US Markets ──
     {"url": "https://www.cnbc.com/id/10001147/device/rss/rss.html",                                    "category": "us-markets"},
     {"url": "https://feeds.content.dowjones.io/public/rss/mw_topstories",                              "category": "us-markets"},
@@ -65,11 +84,9 @@ RSS_FEEDS = [
     {"url": "https://www.cnbc.com/id/15839069/device/rss/rss.html",                                    "category": "us-markets"},
     {"url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",                                   "category": "us-markets"},
     {"url": "https://feeds.content.dowjones.io/public/rss/mw_realtimeheadlines",                       "category": "us-markets"},
-
     # ── Global Economy ──
     {"url": "https://feeds.bbci.co.uk/news/business/rss.xml",                                          "category": "global-economy"},
     {"url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",                                   "category": "global-economy"},
-
     # ── Banking & Finance ──
     {"url": "https://www.business-standard.com/rss/finance-103.rss",                                   "category": "banking-finance"},
     {"url": "https://www.business-standard.com/rss/banking-105.rss",                                   "category": "banking-finance"},
@@ -77,66 +94,55 @@ RSS_FEEDS = [
     {"url": "https://www.moneycontrol.com/rss/banking.xml",                                            "category": "banking-finance"},
     {"url": "https://www.thehindubusinessline.com/money-and-banking/?service=rss",                     "category": "banking-finance"},
     {"url": "https://www.cnbc.com/id/10000664/device/rss/rss.html",                                    "category": "banking-finance"},
-
     # ── Macro & Policy ──
     {"url": "https://www.business-standard.com/rss/economy-policy-102.rss",                            "category": "macro-policy"},
     {"url": "https://economictimes.indiatimes.com/news/economy/rss.cms",                               "category": "macro-policy"},
     {"url": "https://www.thehindubusinessline.com/economy/?service=rss",                               "category": "macro-policy"},
     {"url": "https://economictimes.indiatimes.com/news/economy/policy/rss.cms",                        "category": "macro-policy"},
     {"url": "https://www.moneycontrol.com/rss/economy.xml",                                            "category": "macro-policy"},
-
     # ── Technology & IT ──
     {"url": "https://economictimes.indiatimes.com/tech/rss.cms",                                       "category": "technology-it"},
     {"url": "https://www.business-standard.com/rss/technology-108.rss",                                "category": "technology-it"},
     {"url": "https://www.thehindubusinessline.com/info-tech/?service=rss",                             "category": "technology-it"},
     {"url": "https://www.moneycontrol.com/rss/technology.xml",                                         "category": "technology-it"},
     {"url": "https://www.cnbc.com/id/19854910/device/rss/rss.html",                                    "category": "technology-it"},
-
     # ── Pharma & Health ──
     {"url": "https://economictimes.indiatimes.com/industry/healthcare/biotech/pharmaceuticals/rss.cms","category": "pharma-health"},
     {"url": "https://www.business-standard.com/rss/healthcare-241.rss",                                "category": "pharma-health"},
     {"url": "https://www.thehindubusinessline.com/pharma/?service=rss",                                "category": "pharma-health"},
     {"url": "https://www.moneycontrol.com/rss/pharma.xml",                                             "category": "pharma-health"},
-
     # ── Auto & EV ──
     {"url": "https://economictimes.indiatimes.com/industry/auto/rss.cms",                              "category": "auto-ev"},
     {"url": "https://www.business-standard.com/rss/automobile-103.rss",                                "category": "auto-ev"},
     {"url": "https://www.thehindubusinessline.com/auto/?service=rss",                                  "category": "auto-ev"},
     {"url": "https://www.moneycontrol.com/rss/automobile.xml",                                         "category": "auto-ev"},
-
     # ── Energy & Oil ──
     {"url": "https://economictimes.indiatimes.com/industry/energy/rss.cms",                            "category": "energy-oil"},
     {"url": "https://www.business-standard.com/rss/oil-gas-109.rss",                                   "category": "energy-oil"},
     {"url": "https://www.thehindubusinessline.com/economy/energy/?service=rss",                        "category": "energy-oil"},
     {"url": "https://www.cnbc.com/id/10000734/device/rss/rss.html",                                    "category": "energy-oil"},
-
     # ── Metals & Mining ──
     {"url": "https://economictimes.indiatimes.com/industry/indl-goods/svs/metals-mining/rss.cms",      "category": "metals-mining"},
     {"url": "https://www.business-standard.com/rss/metals-mining-120.rss",                             "category": "metals-mining"},
     {"url": "https://www.thehindubusinessline.com/markets/commodities/?service=rss",                   "category": "metals-mining"},
     {"url": "https://www.moneycontrol.com/rss/commodities.xml",                                        "category": "metals-mining"},
-
     # ── Infrastructure ──
     {"url": "https://economictimes.indiatimes.com/industry/indl-goods/svs/construction/rss.cms",       "category": "infrastructure"},
     {"url": "https://www.business-standard.com/rss/infrastructure-217.rss",                            "category": "infrastructure"},
     {"url": "https://economictimes.indiatimes.com/news/economy/infrastructure/rss.cms",                "category": "infrastructure"},
     {"url": "https://www.thehindubusinessline.com/economy/logistics/?service=rss",                     "category": "infrastructure"},
-
     # ── FMCG & Consumer ──
     {"url": "https://economictimes.indiatimes.com/industry/cons-products/fmcg/rss.cms",                "category": "fmcg-consumer"},
     {"url": "https://www.business-standard.com/rss/consumer-104.rss",                                  "category": "fmcg-consumer"},
     {"url": "https://economictimes.indiatimes.com/industry/cons-products/rss.cms",                     "category": "fmcg-consumer"},
     {"url": "https://www.moneycontrol.com/rss/fmcg.xml",                                               "category": "fmcg-consumer"},
-
     # ── Renewables ──
     {"url": "https://economictimes.indiatimes.com/industry/renewables/rss.cms",                        "category": "renewables"},
     {"url": "https://www.business-standard.com/rss/renewable-energy-193.rss",                          "category": "renewables"},
     {"url": "https://www.thehindubusinessline.com/economy/agri-business/green/?service=rss",           "category": "renewables"},
-
     # ── Real Estate ──
     {"url": "https://economictimes.indiatimes.com/wealth/real-estate/rss.cms",                         "category": "real-estate"},
     {"url": "https://www.moneycontrol.com/rss/realestate.xml",                                         "category": "real-estate"},
-
     # ── Telecom & Media ──
     {"url": "https://economictimes.indiatimes.com/industry/telecom/rss.cms",                           "category": "telecom-media"},
     {"url": "https://www.business-standard.com/rss/telecom-141.rss",                                   "category": "telecom-media"},
@@ -201,7 +207,6 @@ def get_rss_summary(entry):
     return re.sub(r'<[^>]+>', '', summary).strip()
 
 
-# ✅ Replaced newspaper with requests + BeautifulSoup (faster, more reliable)
 def scrape_content(url):
     try:
         r    = requests.get(url, headers=HEADERS, timeout=8, allow_redirects=True)
@@ -257,28 +262,22 @@ def fetch_articles():
                 if similar_title_exists(title):
                     continue
 
-                # ✅ Try scraping first
                 content = scrape_content(link)
 
-                # ✅ Fixed threshold — accept anything ≥ 30 chars
-                # Previously was skipping if summary < 100 chars — too aggressive
                 if len(content) < 100:
                     rss_summary = get_rss_summary(entry)
                     if len(rss_summary) >= 30:
                         content = rss_summary
-                        print(f"  ♻️  Using RSS summary ({len(content)} chars)")
                     else:
-                        # ✅ Last resort — use title, never skip
                         content = title
-                        print(f"  ♻️  Using title as content")
 
-                # Get image
-                raw_image_url = get_image_from_entry(entry)
+                # ✅ Try og:image first (full resolution), fall back to RSS thumbnail
+                raw_image_url = get_og_image(link) or get_image_from_entry(entry)
                 image_url = None
                 if raw_image_url:
                     image_url = upload_image_to_supabase(raw_image_url)
                     if not image_url:
-                        image_url = raw_image_url  # fallback to original URL
+                        image_url = raw_image_url
 
                 article_data = {
                     "title":        title,
@@ -291,8 +290,8 @@ def fetch_articles():
                 }
 
                 save_article(article_data)
-                total_saved      += 1
-                saved_this_feed  += 1
+                total_saved     += 1
+                saved_this_feed += 1
 
             except Exception as e:
                 print(f"  ❌ ERROR: {e}")
