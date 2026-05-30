@@ -130,6 +130,30 @@ function IndexChip({ label, data, dark, mobile }) {
   )
 }
 
+// ✅ Streak badge component
+function StreakBadge({ streak, mobile }) {
+  if (!streak || streak < 1) return null
+  const isFire = streak >= 7
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: '3px',
+      background: isFire ? 'rgba(255,100,0,0.15)' : 'rgba(201,168,76,0.12)',
+      border: `1px solid ${isFire ? 'rgba(255,100,0,0.3)' : 'rgba(201,168,76,0.25)'}`,
+      borderRadius: '20px', padding: mobile ? '3px 8px' : '4px 10px',
+      flexShrink: 0,
+    }}>
+      <span style={{ fontSize: mobile ? '12px' : '13px' }}>{isFire ? '🔥' : '⚡'}</span>
+      <span style={{
+        fontSize: mobile ? '11px' : '12px', fontWeight: '700',
+        color: isFire ? '#FF6400' : '#C9A84C',
+        fontFamily: 'var(--font-ui)',
+      }}>
+        {streak}{!mobile && ' day streak'}
+      </span>
+    </div>
+  )
+}
+
 function ThemeToggle({ dark, onToggle, mobile }) {
   return (
     <button onClick={onToggle} style={{
@@ -163,7 +187,6 @@ function Badge({ count, active, dark }) {
   )
 }
 
-// ✅ Disabled — returns nothing
 function AccountBtn() { return null }
 
 export default function Home() {
@@ -177,6 +200,7 @@ export default function Home() {
   const [isMobile, setIsMobile]           = useState(false)
   const [sectionCounts, setSectionCounts] = useState({})
   const [mobileOverlay, setMobileOverlay] = useState(null)
+  const [streak, setStreak]               = useState(0)  // ✅ streak state
   const [indices, setIndices]             = useState({
     sensex: { price: null, change: null, pct: null },
     nifty:  { price: null, change: null, pct: null },
@@ -188,6 +212,25 @@ export default function Home() {
   const isFree  = false
 
   const activeMobileTab = getActiveMobileTab(activeSection)
+
+  // ✅ Streak logic
+  useEffect(() => {
+    const today      = new Date().toDateString()
+    const lastVisit  = localStorage.getItem('fd-last-visit')
+    const currStreak = parseInt(localStorage.getItem('fd-streak') || '0')
+
+    if (lastVisit === today) {
+      setStreak(currStreak)
+    } else {
+      const yesterday = new Date()
+      yesterday.setDate(yesterday.getDate() - 1)
+      const isConsecutive = lastVisit === yesterday.toDateString()
+      const newStreak = isConsecutive ? currStreak + 1 : 1
+      localStorage.setItem('fd-streak', newStreak)
+      localStorage.setItem('fd-last-visit', today)
+      setStreak(newStreak)
+    }
+  }, [])
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
@@ -376,6 +419,29 @@ export default function Home() {
               }}>✕</button>
             </div>
 
+            {/* ✅ Streak in sidebar */}
+            {streak > 0 && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '10px 12px', marginBottom: '12px',
+                borderRadius: '9px',
+                background: streak >= 7 ? 'rgba(255,100,0,0.08)' : 'rgba(201,168,76,0.08)',
+                border: `1px solid ${streak >= 7 ? 'rgba(255,100,0,0.2)' : 'rgba(201,168,76,0.15)'}`,
+              }}>
+                <span style={{ fontSize: '18px' }}>{streak >= 7 ? '🔥' : '⚡'}</span>
+                <div>
+                  <p style={{ margin: 0, fontSize: '12px', fontWeight: '700',
+                    color: streak >= 7 ? '#FF6400' : '#C9A84C', fontFamily: 'var(--font-ui)' }}>
+                    {streak} day streak
+                  </p>
+                  <p style={{ margin: 0, fontSize: '10px',
+                    color: dark ? '#6B6055' : '#9A8E7E', fontFamily: 'var(--font-ui)' }}>
+                    {streak >= 7 ? 'On fire! Keep it up 🔥' : 'Come back tomorrow!'}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {DESKTOP_NAV.map((item, i) => {
               if (item.type === 'label') return (
                 <p key={i} style={{
@@ -412,13 +478,17 @@ export default function Home() {
         {isMobile ? (
           <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: '7px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h1 style={{
-                fontSize: '18px', fontWeight: '700', color: dark ? '#F0EBE3' : '#1A1410',
-                margin: '0', letterSpacing: '-0.03em',
-                fontFamily: 'var(--font-display)', lineHeight: 1.1,
-              }}>
-                Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
-              </h1>
+              {/* ✅ Mobile: title + streak badge side by side */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h1 style={{
+                  fontSize: '18px', fontWeight: '700', color: dark ? '#F0EBE3' : '#1A1410',
+                  margin: '0', letterSpacing: '-0.03em',
+                  fontFamily: 'var(--font-display)', lineHeight: 1.1,
+                }}>
+                  Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
+                </h1>
+                <StreakBadge streak={streak} mobile={true} />
+              </div>
               <ThemeToggle dark={dark} onToggle={toggleTheme} mobile={true} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -443,13 +513,17 @@ export default function Home() {
                 fontSize: '20px', cursor: 'pointer', padding: '4px', lineHeight: 1, flexShrink: 0,
               }}>☰</button>
               <div>
-                <h1 style={{
-                  fontSize: '22px', fontWeight: '700', color: dark ? '#F0EBE3' : '#1A1410',
-                  margin: '0', letterSpacing: '-0.03em',
-                  fontFamily: 'var(--font-display)', lineHeight: 1.1,
-                }}>
-                  Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
-                </h1>
+                {/* ✅ Desktop: title + streak badge inline */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <h1 style={{
+                    fontSize: '22px', fontWeight: '700', color: dark ? '#F0EBE3' : '#1A1410',
+                    margin: '0', letterSpacing: '-0.03em',
+                    fontFamily: 'var(--font-display)', lineHeight: 1.1,
+                  }}>
+                    Finance <span style={{ color: 'var(--accent)' }}>Digest</span>
+                  </h1>
+                  <StreakBadge streak={streak} mobile={false} />
+                </div>
                 <p style={{
                   fontSize: '10px', color: dark ? '#4A4438' : '#B8AFA3',
                   margin: '2px 0 0', letterSpacing: '0.07em', textTransform: 'uppercase',
