@@ -86,6 +86,34 @@ const SECTOR_IDS = [
 
 const SIDEBAR_W = 210
 
+// ✅ Market Mood derived from Sensex change
+function getMarketMood(sensexPct) {
+  const pct = parseFloat(sensexPct)
+  if (isNaN(pct)) return { emoji: '😴', label: 'Awaiting Data',  color: '#9A8E7E', bg: 'rgba(154,142,126,0.1)'  }
+  if (pct >= 1.5)  return { emoji: '🚀', label: 'Bull Run!',      color: '#16A34A', bg: 'rgba(22,163,74,0.1)'   }
+  if (pct >= 0.5)  return { emoji: '🔥', label: 'Markets on Fire', color: '#E8973E', bg: 'rgba(232,151,62,0.1)' }
+  if (pct >= 0)    return { emoji: '😊', label: 'Slightly Green',  color: '#4ADE80', bg: 'rgba(74,222,128,0.1)' }
+  if (pct >= -0.5) return { emoji: '😬', label: 'Slightly Red',    color: '#FB923C', bg: 'rgba(251,146,60,0.1)' }
+  if (pct >= -1.5) return { emoji: '😰', label: 'Panic Mode',      color: '#F87171', bg: 'rgba(248,113,113,0.1)'}
+  return               { emoji: '💀', label: 'Bloodbath',        color: '#DC2626', bg: 'rgba(220,38,38,0.1)'  }
+}
+
+// ✅ Daily Quiz — changes every day, no API needed
+const DAILY_QUIZZES = [
+  { q: "What does 'Sensex' stand for?", options: ["Sensitive Index","Sensible Exchange","Senior Index","Stock Exchange"], answer: 0, fact: "Sensex = Sensitive Index. It tracks 30 of India's biggest companies on BSE." },
+  { q: "If RBI cuts interest rates, what happens to home loan EMIs?", options: ["They go up","They go down","They stay the same","Depends on the bank"], answer: 1, fact: "Lower RBI rates → banks borrow cheaper → pass savings to borrowers → EMIs fall." },
+  { q: "What is FII?", options: ["Foreign Institutional Investor","Federal Investment Index","Finance Inflation Index","Fixed Income Instrument"], answer: 0, fact: "FIIs are large foreign funds — like US pension funds — that buy/sell Indian stocks." },
+  { q: "A 'Bull Market' means prices are...", options: ["Falling","Crashing","Rising","Stable"], answer: 2, fact: "Bull = charging upward. Bear = swipe downward. Bull market = rising prices." },
+  { q: "What does GDP stand for?", options: ["Gross Domestic Product","General Development Plan","Growth and Development Policy","Global Distribution Price"], answer: 0, fact: "GDP measures the total value of everything a country produces in a year." },
+  { q: "If inflation is 6%, what happens to your ₹100 savings?", options: ["It grows to ₹106","It buys less than before","It stays the same","It doubles"], answer: 1, fact: "Inflation = prices rising. Your ₹100 buys less next year. Savings lose value if returns < inflation." },
+  { q: "What is a mutual fund?", options: ["A government savings scheme","A pool of money from many investors","A type of fixed deposit","A stock exchange index"], answer: 1, fact: "Many people pool money → a fund manager invests it → everyone shares profits and losses." },
+]
+
+function getDailyQuiz() {
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000)
+  return DAILY_QUIZZES[dayOfYear % DAILY_QUIZZES.length]
+}
+
 function getActiveMobileTab(section) {
   if (section === 'headlines') return 'top'
   if (['indian-markets','us-markets','global-economy'].includes(section)) return 'markets'
@@ -130,7 +158,6 @@ function IndexChip({ label, data, dark, mobile }) {
   )
 }
 
-// ✅ Streak badge component
 function StreakBadge({ streak, mobile }) {
   if (!streak || streak < 1) return null
   const isFire = streak >= 7
@@ -145,8 +172,7 @@ function StreakBadge({ streak, mobile }) {
       <span style={{ fontSize: mobile ? '12px' : '13px' }}>{isFire ? '🔥' : '⚡'}</span>
       <span style={{
         fontSize: mobile ? '11px' : '12px', fontWeight: '700',
-        color: isFire ? '#FF6400' : '#C9A84C',
-        fontFamily: 'var(--font-ui)',
+        color: isFire ? '#FF6400' : '#C9A84C', fontFamily: 'var(--font-ui)',
       }}>
         {streak}{!mobile && ' day streak'}
       </span>
@@ -200,7 +226,8 @@ export default function Home() {
   const [isMobile, setIsMobile]           = useState(false)
   const [sectionCounts, setSectionCounts] = useState({})
   const [mobileOverlay, setMobileOverlay] = useState(null)
-  const [streak, setStreak]               = useState(0)  // ✅ streak state
+  const [streak, setStreak]               = useState(0)
+  const [quizAnswer, setQuizAnswer]       = useState(null) // ✅ null = unanswered
   const [indices, setIndices]             = useState({
     sensex: { price: null, change: null, pct: null },
     nifty:  { price: null, change: null, pct: null },
@@ -212,13 +239,27 @@ export default function Home() {
   const isFree  = false
 
   const activeMobileTab = getActiveMobileTab(activeSection)
+  const quiz            = getDailyQuiz()
+
+  // ✅ Load saved quiz answer for today
+  useEffect(() => {
+    const todayKey = `fd-quiz-${new Date().toDateString()}`
+    const saved    = localStorage.getItem(todayKey)
+    if (saved !== null) setQuizAnswer(parseInt(saved))
+  }, [])
+
+  function handleQuizAnswer(idx) {
+    if (quizAnswer !== null) return
+    const todayKey = `fd-quiz-${new Date().toDateString()}`
+    localStorage.setItem(todayKey, idx)
+    setQuizAnswer(idx)
+  }
 
   // ✅ Streak logic
   useEffect(() => {
     const today      = new Date().toDateString()
     const lastVisit  = localStorage.getItem('fd-last-visit')
     const currStreak = parseInt(localStorage.getItem('fd-streak') || '0')
-
     if (lastVisit === today) {
       setStreak(currStreak)
     } else {
@@ -339,6 +380,7 @@ export default function Home() {
     year: 'numeric', month: isMobile ? 'short' : 'long', day: 'numeric',
   })
   const activeSectionLabel = ALL_SECTIONS.find(s => s.id === activeSection)?.label || ''
+  const mood = getMarketMood(indices.sensex?.pct)
 
   const SkeletonCard = () => (
     <div style={{
@@ -377,6 +419,119 @@ export default function Home() {
         : '2px solid transparent',
       whiteSpace: 'nowrap',
     }
+  }
+
+  // ✅ Market Mood Meter component
+  const MarketMoodMeter = () => (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: isMobile ? '14px 16px' : '16px 20px',
+      borderRadius: '14px', marginBottom: '16px',
+      background: dark ? `${mood.bg}` : mood.bg,
+      border: `1px solid ${mood.color}30`,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <span style={{ fontSize: isMobile ? '28px' : '32px' }}>{mood.emoji}</span>
+        <div>
+          <p style={{ margin: 0, fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em',
+            textTransform: 'uppercase', color: dark ? '#6B6055' : '#9A8E7E',
+            fontFamily: 'var(--font-ui)' }}>Today's Market Mood</p>
+          <p style={{ margin: '2px 0 0', fontSize: isMobile ? '16px' : '18px', fontWeight: '700',
+            color: mood.color, fontFamily: 'var(--font-display)' }}>
+            {mood.label}
+          </p>
+        </div>
+      </div>
+      {indices.sensex?.pct && (
+        <div style={{ textAlign: 'right' }}>
+          <p style={{ margin: 0, fontSize: '11px', color: dark ? '#6B6055' : '#9A8E7E',
+            fontFamily: 'var(--font-ui)' }}>SENSEX</p>
+          <p style={{ margin: '2px 0 0', fontSize: '16px', fontWeight: '700',
+            color: parseFloat(indices.sensex.pct) >= 0 ? '#4ADE80' : '#F87171',
+            fontFamily: 'var(--font-ui)' }}>
+            {parseFloat(indices.sensex.pct) >= 0 ? '▲' : '▼'} {Math.abs(indices.sensex.pct)}%
+          </p>
+        </div>
+      )}
+    </div>
+  )
+
+  // ✅ Daily Quiz component
+  const DailyQuiz = () => {
+    const answered = quizAnswer !== null
+    const correct  = quizAnswer === quiz.answer
+    return (
+      <div style={{
+        borderRadius: '14px', marginBottom: '20px', overflow: 'hidden',
+        border: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
+        background: dark ? '#1A1410' : '#fff',
+      }}>
+        <div style={{
+          padding: '12px 16px',
+          background: 'linear-gradient(90deg, var(--accent), #E8C97A)',
+          display: 'flex', alignItems: 'center', gap: '8px',
+        }}>
+          <span style={{ fontSize: '16px' }}>🧠</span>
+          <span style={{ fontSize: '11px', fontWeight: '700', color: '#1A1410',
+            letterSpacing: '0.1em', fontFamily: 'var(--font-ui)' }}>
+            DAILY FINANCE QUIZ
+          </span>
+          <span style={{ marginLeft: 'auto', fontSize: '10px', color: '#1A1410',
+            fontFamily: 'var(--font-ui)', opacity: 0.7 }}>
+            New question tomorrow
+          </span>
+        </div>
+        <div style={{ padding: '16px' }}>
+          <p style={{ fontSize: isMobile ? '14px' : '15px', fontWeight: '600',
+            color: dark ? '#F0EBE3' : '#1A1410', margin: '0 0 14px',
+            fontFamily: 'var(--font-display)', lineHeight: 1.4 }}>
+            {quiz.q}
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {quiz.options.map((opt, idx) => {
+              let bg      = dark ? 'rgba(255,255,255,0.04)' : '#F7F4EF'
+              let border  = dark ? '#2C2822' : '#EDE8E0'
+              let color   = dark ? '#D4C8BC' : '#1A1410'
+              let icon    = null
+
+              if (answered) {
+                if (idx === quiz.answer) {
+                  bg = 'rgba(22,163,74,0.12)'; border = '#16A34A'; color = '#16A34A'; icon = '✓'
+                } else if (idx === quizAnswer && idx !== quiz.answer) {
+                  bg = 'rgba(239,68,68,0.12)'; border = '#EF4444'; color = '#EF4444'; icon = '✗'
+                }
+              }
+
+              return (
+                <button key={idx} onClick={() => handleQuizAnswer(idx)} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '10px 14px', borderRadius: '10px', border: `1px solid ${border}`,
+                  background: bg, color, cursor: answered ? 'default' : 'pointer',
+                  fontFamily: 'var(--font-ui)', fontSize: '13px', fontWeight: '500',
+                  textAlign: 'left', transition: 'all 0.15s',
+                }}>
+                  <span>{opt}</span>
+                  {icon && <span style={{ fontWeight: '700', fontSize: '14px' }}>{icon}</span>}
+                </button>
+              )
+            })}
+          </div>
+
+          {answered && (
+            <div style={{
+              marginTop: '12px', padding: '12px 14px', borderRadius: '10px',
+              background: correct ? 'rgba(22,163,74,0.08)' : 'rgba(201,168,76,0.08)',
+              border: `1px solid ${correct ? 'rgba(22,163,74,0.2)' : 'rgba(201,168,76,0.2)'}`,
+            }}>
+              <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.5,
+                color: dark ? '#D4C8BC' : '#1A1410', fontFamily: 'var(--font-display)' }}>
+                {correct ? '🎉 ' : '💡 '}{quiz.fact}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -419,7 +574,6 @@ export default function Home() {
               }}>✕</button>
             </div>
 
-            {/* ✅ Streak in sidebar */}
             {streak > 0 && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
@@ -478,7 +632,6 @@ export default function Home() {
         {isMobile ? (
           <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: '7px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              {/* ✅ Mobile: title + streak badge side by side */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <h1 style={{
                   fontSize: '18px', fontWeight: '700', color: dark ? '#F0EBE3' : '#1A1410',
@@ -513,7 +666,6 @@ export default function Home() {
                 fontSize: '20px', cursor: 'pointer', padding: '4px', lineHeight: 1, flexShrink: 0,
               }}>☰</button>
               <div>
-                {/* ✅ Desktop: title + streak badge inline */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <h1 style={{
                     fontSize: '22px', fontWeight: '700', color: dark ? '#F0EBE3' : '#1A1410',
@@ -589,8 +741,7 @@ export default function Home() {
                   transition: 'transform 0.15s',
                 }}>{tab.icon}</span>
                 <span style={{
-                  fontSize: '10px',
-                  fontWeight: isActive ? '700' : '400',
+                  fontSize: '10px', fontWeight: isActive ? '700' : '400',
                   color: isActive ? '#C9A84C' : (dark ? '#6B6055' : '#9A8E7E'),
                   fontFamily: 'var(--font-ui)',
                 }}>{tab.label}</span>
@@ -600,16 +751,14 @@ export default function Home() {
         </nav>
       )}
 
-      {/* ── Mobile Markets overlay ── */}
+      {/* ── Mobile overlays (Markets / Sectors / More) ── */}
       {isMobile && mobileOverlay === 'markets' && (
         <div style={{
           position: 'fixed', bottom: '62px', left: 0, right: 0,
           background: dark ? '#1A1410' : '#fff',
           borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
-          borderRadius: '20px 20px 0 0',
-          padding: '16px', zIndex: 39,
-          boxShadow: '0 -8px 32px rgba(0,0,0,0.12)',
-          animation: 'slideUp 0.25s ease',
+          borderRadius: '20px 20px 0 0', padding: '16px', zIndex: 39,
+          boxShadow: '0 -8px 32px rgba(0,0,0,0.12)', animation: 'slideUp 0.25s ease',
         }}>
           <div style={{ width: '36px', height: '3px', background: dark ? '#3A3028' : '#EDE8E0', borderRadius: '2px', margin: '0 auto 16px' }} />
           <p style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em', color: dark ? '#4A4438' : '#C4B9AE', margin: '0 0 12px', fontFamily: 'var(--font-ui)' }}>MARKETS</p>
@@ -618,9 +767,7 @@ export default function Home() {
               display: 'flex', alignItems: 'center', gap: '12px',
               width: '100%', padding: '13px 14px', marginBottom: '4px',
               borderRadius: '12px', border: 'none', cursor: 'pointer',
-              background: activeSection === s.id
-                ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)')
-                : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
+              background: activeSection === s.id ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)') : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
               textAlign: 'left',
             }}>
               <span style={{ fontSize: '22px' }}>{s.icon}</span>
@@ -628,8 +775,7 @@ export default function Home() {
                 color: activeSection === s.id ? 'var(--accent)' : (dark ? '#D4C8BC' : '#1A1410'),
                 fontFamily: 'var(--font-ui)' }}>{s.label}</span>
               {sectionCounts[s.id] > 0 && (
-                <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: '600',
-                  color: 'var(--accent)', fontFamily: 'var(--font-ui)' }}>
+                <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: '600', color: 'var(--accent)', fontFamily: 'var(--font-ui)' }}>
                   {sectionCounts[s.id]}
                 </span>
               )}
@@ -644,9 +790,7 @@ export default function Home() {
               display: 'flex', alignItems: 'center', gap: '12px',
               width: '100%', padding: '13px 14px', marginBottom: '4px',
               borderRadius: '12px', border: 'none', cursor: 'pointer',
-              background: activeSection === s.id
-                ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)')
-                : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
+              background: activeSection === s.id ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)') : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
               textAlign: 'left',
             }}>
               <span style={{ fontSize: '22px' }}>{s.icon}</span>
@@ -658,16 +802,13 @@ export default function Home() {
         </div>
       )}
 
-      {/* ── Mobile Sectors overlay ── */}
       {isMobile && mobileOverlay === 'sectors' && (
         <div style={{
           position: 'fixed', bottom: '62px', left: 0, right: 0,
           background: dark ? '#1A1410' : '#fff',
           borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
-          borderRadius: '20px 20px 0 0',
-          padding: '16px', zIndex: 39,
-          boxShadow: '0 -8px 32px rgba(0,0,0,0.12)',
-          animation: 'slideUp 0.25s ease',
+          borderRadius: '20px 20px 0 0', padding: '16px', zIndex: 39,
+          boxShadow: '0 -8px 32px rgba(0,0,0,0.12)', animation: 'slideUp 0.25s ease',
         }}>
           <div style={{ width: '36px', height: '3px', background: dark ? '#3A3028' : '#EDE8E0', borderRadius: '2px', margin: '0 auto 16px' }} />
           <p style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em', color: dark ? '#4A4438' : '#C4B9AE', margin: '0 0 14px', fontFamily: 'var(--font-ui)' }}>SECTORS</p>
@@ -675,49 +816,39 @@ export default function Home() {
             {SECTORS_SECTIONS.map(s => (
               <button key={s.id} onClick={() => handleSectionClick(s.id)} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
-                gap: '5px', padding: '12px 4px',
-                borderRadius: '12px', border: 'none', cursor: 'pointer',
-                background: activeSection === s.id
-                  ? (dark ? 'rgba(232,151,62,0.15)' : 'rgba(212,135,60,0.10)')
-                  : (dark ? 'rgba(255,255,255,0.04)' : '#F7F4EF'),
+                gap: '5px', padding: '12px 4px', borderRadius: '12px',
+                border: 'none', cursor: 'pointer',
+                background: activeSection === s.id ? (dark ? 'rgba(232,151,62,0.15)' : 'rgba(212,135,60,0.10)') : (dark ? 'rgba(255,255,255,0.04)' : '#F7F4EF'),
                 transition: 'background 0.15s',
               }}>
                 <span style={{ fontSize: '24px' }}>{s.icon}</span>
-                <span style={{
-                  fontSize: '9px', fontWeight: activeSection === s.id ? '700' : '500',
+                <span style={{ fontSize: '9px', fontWeight: activeSection === s.id ? '700' : '500',
                   color: activeSection === s.id ? 'var(--accent)' : (dark ? '#9A8E7E' : '#6B5E4E'),
-                  fontFamily: 'var(--font-ui)', textAlign: 'center', lineHeight: 1.2,
-                }}>{s.label}</span>
+                  fontFamily: 'var(--font-ui)', textAlign: 'center', lineHeight: 1.2 }}>{s.label}</span>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* ── Mobile More overlay ── */}
       {isMobile && mobileOverlay === 'more' && (
         <div style={{
           position: 'fixed', bottom: '62px', left: 0, right: 0,
           background: dark ? '#1A1410' : '#fff',
           borderTop: `1px solid ${dark ? '#2C2822' : '#EDE8E0'}`,
-          borderRadius: '20px 20px 0 0',
-          padding: '16px', zIndex: 39,
-          boxShadow: '0 -8px 32px rgba(0,0,0,0.12)',
-          animation: 'slideUp 0.25s ease',
+          borderRadius: '20px 20px 0 0', padding: '16px', zIndex: 39,
+          boxShadow: '0 -8px 32px rgba(0,0,0,0.12)', animation: 'slideUp 0.25s ease',
         }}>
           <div style={{ width: '36px', height: '3px', background: dark ? '#3A3028' : '#EDE8E0', borderRadius: '2px', margin: '0 auto 16px' }} />
           <button onClick={() => handleSectionClick('portfolio')} style={{
             display: 'flex', alignItems: 'center', gap: '12px',
             width: '100%', padding: '13px 14px', marginBottom: '4px',
             borderRadius: '12px', border: 'none', cursor: 'pointer',
-            background: activeSection === 'portfolio'
-              ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)')
-              : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
+            background: activeSection === 'portfolio' ? (dark ? 'rgba(232,151,62,0.12)' : 'rgba(212,135,60,0.08)') : (dark ? 'rgba(255,255,255,0.03)' : '#FAFAF8'),
             textAlign: 'left',
           }}>
             <span style={{ fontSize: '22px' }}>💰</span>
-            <span style={{ fontSize: '15px', fontWeight: '500',
-              color: dark ? '#D4C8BC' : '#1A1410', fontFamily: 'var(--font-ui)' }}>
+            <span style={{ fontSize: '15px', fontWeight: '500', color: dark ? '#D4C8BC' : '#1A1410', fontFamily: 'var(--font-ui)' }}>
               My Portfolio
             </span>
           </button>
@@ -744,6 +875,14 @@ export default function Home() {
             )}
             {activeSection === 'us-markets' && isPro && (
               <MarketSummaryBanner market="us" dark={dark} isMobile={isMobile} />
+            )}
+
+            {/* Daily Quiz — only on headlines */}
+            {activeSection === 'headlines' && !loading && (
+              <>
+            
+                <DailyQuiz />
+              </>
             )}
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
